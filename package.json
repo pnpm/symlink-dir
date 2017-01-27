@@ -1,0 +1,63 @@
+{
+  "name": "symlink-dir",
+  "version": "1.0.0",
+  "description": "Cross-platform directory symlinking",
+  "main": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
+  "typings": "dist/index.d.ts",
+  "bin": "dist/cli.js",
+  "keywords": [
+    "symlink",
+    "symlinking",
+    "junction",
+    "directory",
+    "dir",
+    "folder"
+  ],
+  "scripts": {
+    "test": "npm run tsc && mos t",
+    "md": "mos",
+    "tsc": "rm -rf dist && tsc",
+    "prepublish": "npm run tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zkochan/symlink-dir.git"
+  },
+  "author": {
+    "name": "Zoltan Kochan",
+    "email": "zoltan.kochan@gmail.com",
+    "url": "http://kochan.io"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zkochan/symlink-dir/issues"
+  },
+  "homepage": "https://github.com/zkochan/symlink-dir#readme",
+  "devDependencies": {
+    "cash-rm": "^0.2.0",
+    "mos": "^1.3.1",
+    "mos-plugin-readme": "^1.0.4",
+    "typescript": "^2.0.3"
+  },
+  "dependencies": {
+    "@types/mz": "0.0.30",
+    "@types/node": "^6.0.45",
+    "mkdirp": "^0.5.1",
+    "mkdirp-promise": "^3.0.1",
+    "mz": "^2.4.0"
+  },
+  "mos": {
+    "plugins": [
+      "readme"
+    ],
+    "installation": {
+      "useShortAlias": true
+    }
+  },
+  "engines": {
+    "node": ">=4"
+  }
+}
