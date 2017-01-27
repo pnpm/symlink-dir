@@ -1,5 +1,7 @@
 # symlink-dir
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/zkochan/symlink-dir.svg)](https://greenkeeper.io/)
+
 > Cross-platform directory symlinking
 
 <!--@shields('npm', 'travis', 'appveyor')-->
