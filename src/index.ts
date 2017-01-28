@@ -9,6 +9,9 @@ import isWindows = require('is-windows')
 const symlinkType = isWindows() ? 'junction' : 'dir'
 
 export default async function symlinkDir (src: string, dest: string) {
+  src = path.resolve(src)
+  dest = path.resolve(dest)
+
   // Junction points can't be relative
   const rel = symlinkType !== 'junction' ? path.relative(path.dirname(dest), src) : src
 
