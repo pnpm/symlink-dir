@@ -23,7 +23,6 @@
   "files": [
     "src/cli.ts",
     "src/index.ts",
-    "src/forceSymlink.ts",
     "typings/index.d.ts"
   ]
 }
