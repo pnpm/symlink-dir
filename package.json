@@ -45,6 +45,7 @@
   "dependencies": {
     "@types/mz": "0.0.30",
     "@types/node": "^6.0.45",
+    "is-windows": "^1.0.0",
     "mkdirp": "^0.5.1",
     "mkdirp-promise": "^3.0.1",
     "mz": "^2.4.0"

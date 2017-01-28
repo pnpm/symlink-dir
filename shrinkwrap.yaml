@@ -693,6 +693,10 @@ is-utf8@^0.2.0:
   id: registry.npmjs.org/is-utf8/0.2.1
   shasum: 4b0da1442104d1b336340e80797e865cf39f7d72
   tarball: 'https://registry.npmjs.org/is-utf8/-/is-utf8-0.2.1.tgz'
+is-windows:
+  id: registry.npmjs.org/is-windows/1.0.0
+  shasum: c61d61020c3ebe99261b781bd3d1622395f547f8
+  tarball: 'https://registry.npmjs.org/is-windows/-/is-windows-1.0.0.tgz'
 isarray@1.0.0:
   id: registry.npmjs.org/isarray/1.0.0
   shasum: bb935d48582cba168c06834957a54a3e07124f11
