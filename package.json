@@ -47,7 +47,7 @@
     "@types/node": "^6.0.45",
     "is-windows": "^1.0.0",
     "mkdirp": "^0.5.1",
-    "mkdirp-promise": "^3.0.1",
+    "mkdirp-promise": "^5.0.0",
     "mz": "^2.4.0"
   },
   "mos": {

@@ -1,4 +1,4 @@
-declare module 'mkdirp-promise/lib/node4' {
+declare module 'mkdirp-promise' {
   const anything: any;
   export = anything;
 }

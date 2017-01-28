@@ -846,6 +846,10 @@ mkdirp-promise@^3.0.1:
   id: registry.npmjs.org/mkdirp-promise/3.0.1
   shasum: d42c5b7ec312dc1c76a29dfec8780ca867abbc4f
   tarball: 'https://registry.npmjs.org/mkdirp-promise/-/mkdirp-promise-3.0.1.tgz'
+mkdirp-promise@^5.0.0:
+  id: registry.npmjs.org/mkdirp-promise/5.0.0
+  shasum: b8bc7d6eab71c2b2e37cb06ea48a459d14366ea2
+  tarball: 'https://registry.npmjs.org/mkdirp-promise/-/mkdirp-promise-5.0.0.tgz'
 mkdirp@^0.5.0:
   id: registry.npmjs.org/mkdirp/0.5.1
   shasum: 30057438eac6cf7f8c4767f38648d6697d75c903

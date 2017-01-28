@@ -1,7 +1,7 @@
 import fs = require('mz/fs')
 import path = require('path')
 import os = require('os')
-import mkdirp = require('mkdirp-promise/lib/node4')
+import mkdirp = require('mkdirp-promise')
 import isWindows = require('is-windows')
 
 // Always use "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default
