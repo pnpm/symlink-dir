@@ -2,6 +2,7 @@ dependencies:
   '@types/mz': registry.npmjs.org/@types/mz/0.0.30
   '@types/node': registry.npmjs.org/@types/node/7.0.5
   cash-rm: registry.npmjs.org/cash-rm/0.2.0
+  graceful-fs: registry.npmjs.org/graceful-fs/4.1.11
   is-windows: registry.npmjs.org/is-windows/1.0.0
   mkdirp: registry.npmjs.org/mkdirp/0.5.1
   mkdirp-promise: registry.npmjs.org/mkdirp-promise/5.0.1
