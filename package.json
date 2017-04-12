@@ -43,7 +43,7 @@
     "typescript": "^2.0.3"
   },
   "dependencies": {
-    "@types/mz": "0.0.30",
+    "@types/mz": "0.0.31",
     "@types/node": "^7.0.4",
     "graceful-fs": "^4.1.11",
     "is-windows": "^1.0.0",
