@@ -29,7 +29,7 @@ symlink-dir . node_modules/my-package
 <!--@example('./example.js')-->
 ```js
 'use strict'
-const symlinkDir = require('symlink-dir').default
+const symlinkDir = require('symlink-dir')
 const path = require('path')
 const cwd = process.cwd()
 

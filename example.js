@@ -1,5 +1,5 @@
 'use strict'
-const symlinkDir = require('./dist').default
+const symlinkDir = require('./dist')
 const path = require('path')
 const cwd = process.cwd()
 

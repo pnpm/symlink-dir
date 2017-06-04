@@ -8,7 +8,7 @@ import isWindows = require('is-windows')
 // lack permission to create them
 const symlinkType = isWindows() ? 'junction' : 'dir'
 
-export default async function symlinkDir (src: string, dest: string) {
+async function symlinkDir (src: string, dest: string) {
   src = path.resolve(src)
   dest = path.resolve(dest)
 
@@ -45,3 +45,8 @@ async function forceSymlink (src: string, dest: string) {
     await forceSymlink(src, dest)
   }
 }
+
+// for backward compatibility
+symlinkDir['default'] = symlinkDir
+
+export = symlinkDir
