@@ -7,7 +7,7 @@
 <!--/@-->
 
 Always uses "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default
-lack permission to create them 
+lack permission to create them
 
 ## Installation
 

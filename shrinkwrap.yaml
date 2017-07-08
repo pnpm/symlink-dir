@@ -8,7 +8,7 @@ dependencies:
   mz: 2.6.0
 devDependencies:
   cash-rm: 0.2.0
-  mos: 1.3.1
+  mos: 2.0.0-alpha.3
   mos-plugin-readme: 1.0.4
   typescript: 2.4.1
 packages:
@@ -27,49 +27,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-TPO97s9S8vasjzKw2IpoLrSEiXk=
-  /@zkochan/hosted-git-info/2.1.5:
-    dev: true
-    resolution:
-      integrity: sha1-VVsJHJVrqEky2IiY++/gZDxjp58=
-  /@zkochan/normalize-package-data/2.3.6:
-    dependencies:
-      '@zkochan/hosted-git-info': 2.1.5
-      is-builtin-module: 1.0.0
-      semver: 5.3.0
-      validate-npm-package-license: 3.0.1
-    dev: true
-    resolution:
-      integrity: sha1-fxfhnnnmUm3mc7d/OMgvrhrHXWk=
-  /@zkochan/read-pkg-up/1.0.2:
-    dependencies:
-      '@zkochan/read-pkg': 1.1.2
-      find-up: 1.1.2
-    dev: true
-    resolution:
-      integrity: sha1-naMNLg1pvpyxPj+yJkAiwPaHqgg=
-  /@zkochan/read-pkg/1.1.2:
-    dependencies:
-      '@zkochan/normalize-package-data': 2.3.6
-      load-json-file: 1.1.0
-      path-type: 1.1.0
-    dev: true
-    resolution:
-      integrity: sha1-7o/STAEJZvFmIg+Roa7hr397tTQ=
-  /@zkochan/tap-diff/1.1.1:
-    dependencies:
-      babel-runtime: 6.23.0
-      chalk: 1.1.3
-      core-js: 2.4.1
-      diff: 2.2.3
-      duplexer: 0.1.1
-      figures: 1.7.0
-      jsondiffpatch: 0.1.43
-      pretty-ms: 2.1.0
-      tap-parser: 1.3.2
-      through2: 2.0.3
-    dev: true
-    resolution:
-      integrity: sha1-97rUOe3/KbmLC/80Rru4xecJbHk=
   /acorn/3.0.4:
     dev: true
     resolution:
@@ -496,6 +453,13 @@ packages:
     dev: true
     resolution:
       integrity: sha1-kN6ptpIPA7L3vHSZYVABrubyMX4=
+  /cross-spawn/4.0.2:
+    dependencies:
+      lru-cache: 4.1.1
+      which: 1.2.14
+    dev: true
+    resolution:
+      integrity: sha1-e5JHYhwjrf3ThWAEqCPL45dCTUE=
   /currently-unhandled/0.4.1:
     dependencies:
       array-find-index: 1.0.2
@@ -1067,12 +1031,14 @@ packages:
       minimist: 0.0.8
     resolution:
       integrity: sha1-MAV0OOrGz3+MR2fzhkjWaX11yQM=
-  /mos-core/0.2.1:
+  /mos-core/1.0.2:
     dependencies:
+      babel-run-async: 1.0.0
       babel-runtime: 6.23.0
       ccount: 1.0.1
       collapse-white-space: 1.0.3
       core-js: 2.4.1
+      file-position: 0.0.0
       is-promise: 2.1.0
       longest-streak: 1.0.0
       markdown-table: 0.4.0
@@ -1082,55 +1048,68 @@ packages:
       trim: 0.0.1
       trim-trailing-lines: 1.1.0
       unist-util-remove-position: 1.1.1
-      vfile: 1.4.0
-      vfile-location: 2.0.1
     dev: true
     resolution:
-      integrity: sha1-oVarJoUbAcjkIegGVhfPNfEfU5o=
-  /mos-init/1.1.0:
+      integrity: sha1-N8JpfBzHhhgkFivQ+rrvJCX55H0=
+  /mos-hosted-git-info/1.0.0:
+    dev: true
+    resolution:
+      integrity: sha1-yj8BhwBEv14CT4WPEl3FmxrFe2k=
+  /mos-init/1.1.2:
     dependencies:
       arr-exclude: 1.0.0
       core-js: 2.4.1
+      cross-spawn: 4.0.2
+      mos-read-pkg-up: 1.0.0
       the-argv: 1.0.0
       write-pkg: 1.0.0
     dev: true
     resolution:
-      integrity: sha1-k2l4WlCc1ekHsjMYGTwK49JXqmQ=
-  /mos-plugin-dependencies/2.2.0:
+      integrity: sha1-DuxN4kE4UjTkwKFUqZhc7NH8RIM=
+  /mos-normalize-package-data/1.0.0:
+    dependencies:
+      is-builtin-module: 1.0.0
+      mos-hosted-git-info: 1.0.0
+      semver: 5.3.0
+      validate-npm-package-license: 3.0.1
+    dev: true
+    resolution:
+      integrity: sha1-D9oITzRT8B7UtWVTQeYDPxeaeas=
+  /mos-plugin-dependencies/2.2.2:
     dependencies:
       babel-runtime: 6.23.0
       github-url-to-object: 2.2.6
       shieldman: 1.2.0
     dev: true
     resolution:
-      integrity: sha1-pPxOypZ1ejWAew8tRXUFIQHfgtw=
-  /mos-plugin-ejs/1.1.0:
+      integrity: sha1-vm7fN15M9ch8QU0PI3ZmItGO0Xc=
+  /mos-plugin-ejs/1.1.2:
     dependencies:
-      '@zkochan/read-pkg-up': 1.0.2
       babel-run-async: 1.0.0
       babel-runtime: 6.23.0
       github-url-to-object: 2.2.6
+      mos-read-pkg-up: 1.0.0
       reserved-words: 0.1.1
     dev: true
     resolution:
-      integrity: sha1-K8Q82LEiMQNf/ao4QIviQksiy+k=
-  /mos-plugin-example/1.1.0:
+      integrity: sha1-1jZXxN9o0yMx1MdHweq/vBC1zBY=
+  /mos-plugin-example/1.1.2:
     dependencies:
       babel-runtime: 6.23.0
       codemo: 0.2.1
       independent: 0.2.0
     dev: true
     resolution:
-      integrity: sha1-e6Qv56UPL8/6lnEkONx/cfD0anE=
-  /mos-plugin-installation/1.2.0:
+      integrity: sha1-YmGDjrRVXNmjj7zrkgEz55S4hHc=
+  /mos-plugin-installation/1.2.2:
     dependencies:
       babel-runtime: 6.23.0
       markdownscript: 1.3.0
       mdast-util-to-string: 1.0.4
     dev: true
     resolution:
-      integrity: sha1-WaHEyiJ9InEXeCvf3+gG3bf4Xiw=
-  /mos-plugin-license/1.2.0:
+      integrity: sha1-r2FghByH+zmGnQEHwGWaKTayPH8=
+  /mos-plugin-license/1.2.2:
     dependencies:
       babel-runtime: 6.23.0
       file-exists: 1.0.0
@@ -1138,21 +1117,21 @@ packages:
       mdast-util-to-string: 1.0.4
     dev: true
     resolution:
-      integrity: sha1-D05kpCfobBXLuDg6nBC9snXfLao=
-  /mos-plugin-markdownscript/2.1.0:
+      integrity: sha1-BEV+GXukOHeOPbZ/rdi8yYR0fIY=
+  /mos-plugin-markdownscript/2.1.2:
     dependencies:
       babel-runtime: 6.23.0
       markdownscript: 1.3.0
       reserved-words: 0.1.1
     dev: true
     resolution:
-      integrity: sha1-wUeSaZOiFOrsHwjZr31LkfIBWFw=
-  /mos-plugin-package-json/2.1.0:
+      integrity: sha1-Xh02JCByVXeNRbt+elDceSbDA7A=
+  /mos-plugin-package-json/2.1.2:
     dependencies:
       babel-runtime: 6.23.0
     dev: true
     resolution:
-      integrity: sha1-0UzSUMY/BLBQg5IjEvZFPoyIWDM=
+      integrity: sha1-kQZoTdMWCYmBXd7Zi7qj6FedeaU=
   /mos-plugin-readme/1.0.4:
     dependencies:
       babel-runtime: 6.23.0
@@ -1160,72 +1139,103 @@ packages:
     dev: true
     resolution:
       integrity: sha1-fOweSUjB7B1EKRWAHR9m164khfM=
-  /mos-plugin-shields/2.2.0:
+  /mos-plugin-shields/2.2.2:
     dependencies:
       babel-runtime: 6.23.0
       shieldman: 1.2.0
     dev: true
     resolution:
-      integrity: sha1-L55aB7tYQOptGa1Nc02ixKLVGyU=
-  /mos-plugin-snippet/2.1.1:
+      integrity: sha1-LfbfU3wsqPcOk/fkq64N9G69TvY=
+  /mos-plugin-snippet/2.1.3:
     dependencies:
       babel-runtime: 6.23.0
     dev: true
     resolution:
-      integrity: sha1-4urieZUjRAXzkk6iAiMgDPa60KY=
-  /mos-plugin-toc/1.2.1:
+      integrity: sha1-AldDv4iW6GXi9/RIkoz0QHjUxZU=
+  /mos-plugin-toc/1.2.3:
     dependencies:
       babel-runtime: 6.23.0
       github-slugger: 1.1.3
       markdownscript: 1.3.0
     dev: true
     resolution:
-      integrity: sha1-uPs0aBbnolpBq/6rBF87uzyGVwo=
-  /mos-processor/1.2.0:
+      integrity: sha1-gDYFslWs9iUlq1l88ErSa99d4ws=
+  /mos-processor/1.2.2:
     dependencies:
-      '@zkochan/read-pkg-up': 1.0.2
       babel-runtime: 6.23.0
       github-url-to-object: 2.2.6
       magic-hook: 1.0.0
-      mos-core: 0.2.1
+      mos-core: 1.0.2
+      mos-read-pkg-up: 1.0.0
+      normalize-path: 2.1.1
       remi: 1.1.1
       remi-runner: 1.1.3
-      vfile: 1.4.0
     dev: true
     resolution:
-      integrity: sha1-wiNpb9b1ogwau0q0D4ToL0StaT0=
-  /mos/1.3.1:
+      integrity: sha1-ayJKldvmppQ77O1etshS3Im6p9s=
+  /mos-read-pkg-up/1.0.0:
     dependencies:
-      '@zkochan/read-pkg-up': 1.0.2
-      '@zkochan/tap-diff': 1.1.1
+      find-up: 1.1.2
+      mos-read-pkg: 1.1.3
+    dev: true
+    resolution:
+      integrity: sha1-8Ai4XlQve4/T/bnXTtyOf00YJ2k=
+  /mos-read-pkg/1.1.3:
+    dependencies:
+      load-json-file: 1.1.0
+      mos-normalize-package-data: 1.0.0
+      path-type: 1.1.0
+    dev: true
+    resolution:
+      integrity: sha1-FM28aoCPD7wbY3hmob7XBaK9EcQ=
+  /mos-tap-diff/1.0.0:
+    dependencies:
+      babel-runtime: 6.23.0
+      chalk: 1.1.3
+      core-js: 2.4.1
+      diff: 2.2.3
+      duplexer: 0.1.1
+      figures: 1.7.0
+      jsondiffpatch: 0.1.43
+      pretty-ms: 2.1.0
+      tap-parser: 1.3.2
+      through2: 2.0.3
+    dev: true
+    resolution:
+      integrity: sha1-NDOB0f2e1RljsLMVNbf9i64E/3A=
+  /mos/2.0.0-alpha.3:
+    dependencies:
       babel-runtime: 6.23.0
       chalk: 1.1.3
       glob: 7.0.6
       loud-rejection: 1.6.0
       magic-hook: 1.0.0
       meow: 3.7.0
-      mos-init: 1.1.0
-      mos-plugin-dependencies: 2.2.0
-      mos-plugin-ejs: 1.1.0
-      mos-plugin-example: 1.1.0
-      mos-plugin-installation: 1.2.0
-      mos-plugin-license: 1.2.0
-      mos-plugin-markdownscript: 2.1.0
-      mos-plugin-package-json: 2.1.0
-      mos-plugin-shields: 2.2.0
-      mos-plugin-snippet: 2.1.1
-      mos-plugin-toc: 1.2.1
-      mos-processor: 1.2.0
+      mos-init: 1.1.2
+      mos-plugin-dependencies: 2.2.2
+      mos-plugin-ejs: 1.1.2
+      mos-plugin-example: 1.1.2
+      mos-plugin-installation: 1.2.2
+      mos-plugin-license: 1.2.2
+      mos-plugin-markdownscript: 2.1.2
+      mos-plugin-package-json: 2.1.2
+      mos-plugin-shields: 2.2.2
+      mos-plugin-snippet: 2.1.3
+      mos-plugin-toc: 1.2.3
+      mos-processor: 1.2.2
+      mos-read-pkg-up: 1.0.0
+      mos-tap-diff: 1.0.0
       normalize-newline: 2.0.0
       normalize-path: 2.0.1
       rcfile: 1.0.3
       relative: 3.0.2
-      resolve: 1.1.7
+      resolve-cwd: 1.0.0
+      resolve-from: 2.0.0
       tape: 4.5.1
       update-notifier: 0.7.0
     dev: true
     resolution:
-      integrity: sha1-FSUfZGIGkofctlBXXXpZPHvnkYg=
+      integrity: sha1-t+m8RNw22I6vHVgmBn54ySEeqVE=
   /ms/2.0.0:
     dev: true
     resolution:
@@ -1266,6 +1276,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-R4hqwWYnYNQmG32XnSQXCdPOP3o=
+  /normalize-path/2.1.1:
+    dependencies:
+      remove-trailing-separator: 1.0.2
+    dev: true
+    resolution:
+      integrity: sha1-GrKLVW4Zg2Oowab35vogE3/mrtk=
   /number-is-nan/1.0.1:
     dev: true
     resolution:
@@ -1507,6 +1523,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-Rxt5AU16SWvboB0BihJvj3ctiMY=
+  /remove-trailing-separator/1.0.2:
+    dev: true
+    resolution:
+      integrity: sha1-abBi2XhyetFNxrVrpKt3L9jXBRE=
   /repeat-string/1.6.1:
     dev: true
     resolution:
@@ -1528,10 +1548,20 @@ packages:
     dev: true
     resolution:
       integrity: sha1-b3wV5eVhTFDalhYw2kat3IfAzvI=
+  /resolve-cwd/1.0.0:
+    dependencies:
+      resolve-from: 2.0.0
+    dev: true
+    resolution:
+      integrity: sha1-Tq7qQe0EDRcCRX32SkKysH0kb58=
   /resolve-from/1.0.1:
     dev: true
     resolution:
       integrity: sha1-Jsv+k10a7uq7Kbw/5a6wHpPUQiY=
+  /resolve-from/2.0.0:
+    dev: true
+    resolution:
+      integrity: sha1-lICrIOlP+h2egKgEx+oUdhGWa1c=
   /resolve/1.1.7:
     dev: true
     resolution:
@@ -1862,14 +1892,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-KAS6vnEq0zeUWaz74kdGqywwP7w=
-  /vfile-location/2.0.1:
-    dev: true
-    resolution:
-      integrity: sha1-C/iBb3MrD4vZAqVv2kxiyOk13FI=
-  /vfile/1.4.0:
-    dev: true
-    resolution:
-      integrity: sha1-wP1vpIT43r23cfaMMe112I2pf+c=
   /vorpal-autocomplete-fs/0.0.3:
     dependencies:
       chalk: 1.1.3
@@ -1965,7 +1987,7 @@ specifiers:
   is-windows: ^1.0.0
   mkdirp: ^0.5.1
   mkdirp-promise: ^5.0.0
-  mos: ^1.3.1
+  mos: ^2.0.0-alpha.3
   mos-plugin-readme: ^1.0.4
   mz: ^2.4.0
   typescript: ^2.0.3
