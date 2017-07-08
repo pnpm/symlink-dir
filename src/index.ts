@@ -8,7 +8,7 @@ import isWindows = require('is-windows')
 // lack permission to create them
 const symlinkType = isWindows() ? 'junction' : 'dir'
 
-async function symlinkDir (src: string, dest: string) {
+async function symlinkDir (src: string, dest: string): Promise<{reused: Boolean}> {
   src = path.resolve(src)
   dest = path.resolve(dest)
 
@@ -16,12 +16,11 @@ async function symlinkDir (src: string, dest: string) {
   const rel = symlinkType !== 'junction' ? path.relative(path.dirname(dest), src) : src
 
   try {
-    await forceSymlink(rel, dest)
+    return await forceSymlink(rel, dest)
   } catch (err) {
     if ((<NodeJS.ErrnoException>err).code === 'ENOENT') {
       await mkdirp(path.dirname(dest))
-      await forceSymlink(rel, dest)
-      return
+      return await forceSymlink(rel, dest)
     }
     throw err
   }
@@ -31,18 +30,19 @@ async function symlinkDir (src: string, dest: string) {
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
-async function forceSymlink (src: string, dest: string) {
+async function forceSymlink (src: string, dest: string): Promise<{reused: Boolean}> {
   try {
     await fs.symlink(src, dest, symlinkType)
+    return { reused: false }
   } catch (err) {
     if ((<NodeJS.ErrnoException>err).code !== 'EEXIST') throw err
 
     const linkString = await fs.readlink(dest)
     if (src === linkString) {
-      return
+      return { reused: true }
     }
     await fs.unlink(dest)
-    await forceSymlink(src, dest)
+    return await forceSymlink(src, dest)
   }
 }
 

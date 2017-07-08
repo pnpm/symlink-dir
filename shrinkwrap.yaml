@@ -3,13 +3,12 @@ dependencies:
   '@types/node': 8.0.9
   graceful-fs: 4.1.11
   is-windows: 1.0.1
-  mkdirp: 0.5.1
   mkdirp-promise: 5.0.1
   mz: 2.6.0
 devDependencies:
-  cash-rm: 0.2.0
   mos: 2.0.0-alpha.3
   mos-plugin-readme: 1.0.4
+  rimraf: 2.6.1
   typescript: 2.4.1
 packages:
   /@types/mz/0.0.31:
@@ -41,10 +40,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-LwwWWIKXOa3V67FeawxuNCPwFro=
-  /ansi-escapes/1.4.0:
-    dev: true
-    resolution:
-      integrity: sha1-06ioOzGapneTZisT52HHkRQiMG4=
   /ansi-regex/0.2.1:
     dev: true
     resolution:
@@ -194,14 +189,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-WkxYpQyclGHlZLSyo7+ryXolhNs=
-  /babel-polyfill/6.23.0:
-    dependencies:
-      babel-runtime: 6.23.0
-      core-js: 2.4.1
-      regenerator-runtime: 0.10.5
-    dev: true
-    resolution:
-      integrity: sha1-g2TKYt+Or7gwSZ9pkXdGbDsDSZ0=
   /babel-register/6.24.1:
     dependencies:
       babel-core: 6.25.0
@@ -322,14 +309,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-Sm+gc5nCa7pH8LJJa00PtAjFVQ0=
-  /cash-rm/0.2.0:
-    dependencies:
-      glob: 6.0.4
-      vorpal: 1.12.0
-      vorpal-autocomplete-fs: 0.0.3
-    dev: true
-    resolution:
-      integrity: sha1-rbi/kK/O2IeaksMQkpj9yPCiuSI=
   /ccount/1.0.1:
     dev: true
     resolution:
@@ -374,16 +353,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-T6kXw+WclKAEzWH47lCdplFocUM=
-  /cli-cursor/1.0.2:
-    dependencies:
-      restore-cursor: 1.0.1
-    dev: true
-    resolution:
-      integrity: sha1-ZNo/fValRBLll5S9Ytw1KV6PKYc=
-  /cli-width/1.1.1:
-    dev: true
-    resolution:
-      integrity: sha1-pNKT72frt7iNSk1CwMzwDE0eNm0=
   /code-point-at/1.1.0:
     dev: true
     resolution:
@@ -568,10 +537,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-LUH1Y+H+QA7Uli/hpNXGp1Od9/Y=
-  /exit-hook/1.1.1:
-    dev: true
-    resolution:
-      integrity: sha1-8FyiM7SMBdVP/wd2XfhQfpXAL/g=
   /figures/1.7.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -630,16 +595,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-ypJQFlFJdI7uswv8xgAMb+DSQvc=
-  /glob/6.0.4:
-    dependencies:
-      inflight: 1.0.6
-      inherits: 2.0.3
-      minimatch: 3.0.4
-      once: 1.4.0
-      path-is-absolute: 1.0.1
-    dev: true
-    resolution:
-      integrity: sha1-DwiGD2oVUSey+t1PnOJLGqtuTSI=
   /glob/7.0.6:
     dependencies:
       fs.realpath: 1.0.0
@@ -651,6 +606,17 @@ packages:
     dev: true
     resolution:
       integrity: sha1-IRuvr0nlJbjNkyYNFKsTYVKz9Xo=
+  /glob/7.1.2:
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.3
+      minimatch: 3.0.4
+      once: 1.4.0
+      path-is-absolute: 1.0.1
+    dev: true
+    resolution:
+      integrity: sha512-MJTUg1kjuLeQCJ+ccE4Vpa6kKVXkPYJ2mOCQyUuKLcLQsdrMCpBPUi8qVE6+YuaJkozeA9NusTAw3hLr8Xe5EQ==
   /globals/9.18.0:
     dev: true
     resolution:
@@ -711,10 +677,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-khi5srkoojixPcT7a21XbyMUU+o=
-  /in-publish/2.0.0:
-    dev: true
-    resolution:
-      integrity: sha1-4g/146KvwmkDILbcVSaCqcf631E=
   /indent-string/2.1.0:
     dependencies:
       repeating: 2.0.1
@@ -746,23 +708,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-BTfLedr1m1mhpRff9wbIbsA5Fi4=
-  /inquirer/0.11.0:
-    dependencies:
-      ansi-escapes: 1.4.0
-      ansi-regex: 2.1.1
-      chalk: 1.1.3
-      cli-cursor: 1.0.2
-      cli-width: 1.1.1
-      figures: 1.7.0
-      lodash: 3.10.1
-      readline2: 1.0.1
-      run-async: 0.1.0
-      rx-lite: 3.1.2
-      strip-ansi: 3.0.1
-      through: 2.3.8
-    dev: true
-    resolution:
-      integrity: sha1-dEi/qSQJKvMR1HFzu6uZDK4rsCc=
   /invariant/2.2.2:
     dependencies:
       loose-envify: 1.3.1
@@ -926,21 +871,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-o45GtzRp4EILDaEhLmbUFL42S6Q=
-  /lodash/3.10.1:
-    dev: true
-    resolution:
-      integrity: sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
   /lodash/4.17.4:
     dev: true
     resolution:
       integrity: sha1-eCA6TRwyiuHYbcpkYONptX9AVa4=
-  /log-update/1.0.2:
-    dependencies:
-      ansi-escapes: 1.4.0
-      cli-cursor: 1.0.2
-    dev: true
-    resolution:
-      integrity: sha1-GZKfZMQJPS0ucHWh2tivWcKWuNE=
   /longest-streak/1.0.0:
     dev: true
     resolution:
@@ -1240,10 +1174,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
-  /mute-stream/0.0.5:
-    dev: true
-    resolution:
-      integrity: sha1-j7+rsKmKJT0xhDMfno3rc3L6xsA=
   /mz/2.6.0:
     dependencies:
       any-promise: 1.3.0
@@ -1251,10 +1181,6 @@ packages:
       thenify-all: 1.6.0
     resolution:
       integrity: sha1-yLhSHZWN8KTydoAl22nHGe5O8c4=
-  /node-localstorage/0.6.0:
-    dev: true
-    resolution:
-      integrity: sha1-RaBgHGky395mRKIzYfG+Fzx1068=
   /node-status-codes/1.0.0:
     dev: true
     resolution:
@@ -1303,10 +1229,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
-  /onetime/1.1.0:
-    dev: true
-    resolution:
-      integrity: sha1-ofeDj4MUxRbwXs78vEzP4EtO14k=
   /os-homedir/1.0.2:
     dev: true
     resolution:
@@ -1471,14 +1393,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-m+qzzcn7KUxEmd1gMbchF+Y2eIUbieUaxkWtptyHywrX0rE8QEYqPC07Vuy4Wm32/xE16NcdBctb8S0Xe/5IeQ==
-  /readline2/1.0.1:
-    dependencies:
-      code-point-at: 1.1.0
-      is-fullwidth-code-point: 1.0.0
-      mute-stream: 0.0.5
-    dev: true
-    resolution:
-      integrity: sha1-QQWWCP/BVHV7cV2ZidGZ/783LjU=
   /redent/1.0.0:
     dependencies:
       indent-string: 2.1.0
@@ -1566,19 +1480,18 @@ packages:
     dev: true
     resolution:
       integrity: sha1-IDEU2CrSxe2ejgQRs5ModeiJ6Xs=
-  /restore-cursor/1.0.1:
-    dependencies:
-      exit-hook: 1.1.1
-      onetime: 1.1.0
-    dev: true
-    resolution:
-      integrity: sha1-NGYfRohjJ/7SmRR5FSJS35LapUE=
   /resumer/0.0.0:
     dependencies:
       through: 2.3.8
     dev: true
     resolution:
       integrity: sha1-8ej0YeQGS6Oegq883CqMiT0HZ1k=
+  /rimraf/2.6.1:
+    dependencies:
+      glob: 7.1.2
+    dev: true
+    resolution:
+      integrity: sha1-wjOOxkPfeht/5cVPqG9XQopV8z0=
   /rollup-plugin-babel/2.4.0:
     dependencies:
       babel-core: 6.25.0
@@ -1607,16 +1520,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-v2zoO4dRDRY0Ru6qV37WpvxYNeA=
-  /run-async/0.1.0:
-    dependencies:
-      once: 1.4.0
-    dev: true
-    resolution:
-      integrity: sha1-yK1KXhEGYeQCp9IbUw4AnyX444k=
-  /rx-lite/3.1.2:
-    dev: true
-    resolution:
-      integrity: sha1-Gc5QLKVyZl87ZHsQk5+X/RYV8QI=
   /safe-buffer/5.1.1:
     dev: true
     resolution:
@@ -1892,28 +1795,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-KAS6vnEq0zeUWaz74kdGqywwP7w=
-  /vorpal-autocomplete-fs/0.0.3:
-    dependencies:
-      chalk: 1.1.3
-      strip-ansi: 3.0.1
-    dev: true
-    resolution:
-      integrity: sha1-15b3sr1A2LbdxkE69M/QFv9QnQE=
-  /vorpal/1.12.0:
-    dependencies:
-      babel-polyfill: 6.23.0
-      chalk: 1.1.3
-      in-publish: 2.0.0
-      inquirer: 0.11.0
-      lodash: 4.17.4
-      log-update: 1.0.2
-      minimist: 1.2.0
-      node-localstorage: 0.6.0
-      strip-ansi: 3.0.1
-      wrap-ansi: 2.1.0
-    dev: true
-    resolution:
-      integrity: sha1-S+eypOSPj8/JzzZIxBnTEcUiFZ0=
   /which/1.2.14:
     dependencies:
       isexe: 2.0.0
@@ -1926,13 +1807,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-DAnIXCqUaD0Nfq+O4JfVZL8OEFw=
-  /wrap-ansi/2.1.0:
-    dependencies:
-      string-width: 1.0.2
-      strip-ansi: 3.0.1
-    dev: true
-    resolution:
-      integrity: sha1-2Pw9KE3QV5T+hJc8rs3Rz4JP3YU=
   /wrappy/1.0.2:
     dev: true
     resolution:
@@ -1982,12 +1856,11 @@ shrinkwrapVersion: 3
 specifiers:
   '@types/mz': 0.0.31
   '@types/node': ^8.0.0
-  cash-rm: ^0.2.0
   graceful-fs: ^4.1.11
   is-windows: ^1.0.0
-  mkdirp: ^0.5.1
   mkdirp-promise: ^5.0.0
   mos: ^2.0.0-alpha.3
   mos-plugin-readme: ^1.0.4
   mz: ^2.4.0
+  rimraf: ^2.6.1
   typescript: ^2.0.3

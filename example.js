@@ -1,6 +1,14 @@
 'use strict'
 const symlinkDir = require('./dist')
 const path = require('path')
-const cwd = process.cwd()
 
-symlinkDir(path.join(cwd, 'src'), path.join(cwd, 'node_modules/src'))
+symlinkDir('src', 'node_modules/src')
+  .then(result => {
+    console.log(result)
+
+    return symlinkDir('src', 'node_modules/src')
+  })
+  .then(result => {
+    console.log(result)
+  })
+  .catch(err => console.error(err))

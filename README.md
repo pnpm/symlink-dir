@@ -31,11 +31,28 @@ symlink-dir . node_modules/my-package
 'use strict'
 const symlinkDir = require('symlink-dir')
 const path = require('path')
-const cwd = process.cwd()
 
-symlinkDir(path.join(cwd, 'src'), path.join(cwd, 'node_modules/src'))
+symlinkDir('src', 'node_modules/src')
+  .then(result => {
+    console.log(result)
+    //> { reused: false }
+
+    return symlinkDir('src', 'node_modules/src')
+  })
+  .then(result => {
+    console.log(result)
+    //> { reused: true }
+  })
+  .catch(err => console.error(err))
 ```
 <!--/@-->
+
+## API
+
+### `symlinkDir(src, dest): Promise<{reused: boolean}>`
+
+Creates a symlink in `dest` that points to `src`. Returns an object that contains a boolean property called `reused`.
+`reused` is `true` if the symlink already existed pointing to the `src`.
 
 ## License
 
