@@ -19,10 +19,10 @@
   "scripts": {
     "pretest": "rimraf node_modules/src",
     "test": "npm run tsc && mos t",
-    "premd": "rimraf node_modules/src",
+    "premd": "rimraf node_modules/src && npm run tsc",
     "md": "mos",
     "tsc": "rimraf dist && tsc",
-    "prepublish": "npm run tsc"
+    "prepublishOnly": "npm run tsc"
   },
   "repository": {
     "type": "git",
