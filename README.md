@@ -35,7 +35,7 @@ const path = require('path')
 symlinkDir('src', 'node_modules/src')
   .then(result => {
     console.log(result)
-    //> { reused: true }
+    //> { reused: false }
 
     return symlinkDir('src', 'node_modules/src')
   })
