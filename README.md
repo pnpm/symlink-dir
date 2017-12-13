@@ -35,7 +35,7 @@ const path = require('path')
 symlinkDir('src', 'node_modules/src')
   .then(result => {
     console.log(result)
-    //> { reused: false }
+    //> { reused: true }
 
     return symlinkDir('src', 'node_modules/src')
   })
@@ -56,4 +56,4 @@ Creates a symlink in `dest` that points to `src`. Returns an object that contain
 
 ## License
 
-[MIT](./LICENSE) © [Zoltan Kochan](http://kochan.io)
+[MIT](./LICENSE) © [Zoltan Kochan](https://www.kochan.io)
