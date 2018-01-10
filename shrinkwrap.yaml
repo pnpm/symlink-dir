@@ -1,6 +1,6 @@
 dependencies:
   '@types/mz': 0.0.32
-  '@types/node': 8.5.0
+  '@types/node': 9.3.0
   graceful-fs: 4.1.11
   is-windows: 1.0.1
   mkdirp-promise: 5.0.1
@@ -13,14 +13,14 @@ devDependencies:
 packages:
   /@types/mz/0.0.32:
     dependencies:
-      '@types/node': 8.5.0
+      '@types/node': 9.3.0
     dev: false
     resolution:
       integrity: sha512-cy3yebKhrHuOcrJGkfwNHhpTXQLgmXSv1BX+4p32j+VUQ6aP2eJ5cL7OvGcAQx75fCTFaAIIAKewvqL+iwSd4g==
-  /@types/node/8.5.0:
+  /@types/node/9.3.0:
     dev: false
     resolution:
-      integrity: sha512-9FmMtKisAgPekOGYeaXoB6QYDSX8MhLZurlpPoVupVj5Pl5ewNfv1yZrUs84B0XK7s1G/Vay10oXBbM1akSfTA==
+      integrity: sha512-wNBfvNjzsJl4tswIZKXCFQY0lss9nKUyJnG6T94X/eqjRgI2jHZ4evdjhQYBSan/vGtF6XVXPApOmNH2rf0KKw==
   /@zkochan/async-replace/0.4.1:
     dependencies:
       babel-run-async: 1.0.0
@@ -1569,7 +1569,7 @@ packages:
     dev: true
     resolution:
       integrity: sha1-8FKijacOYYkX7wqKw0wa5aaChrM=
-  /rc/1.2.2:
+  /rc/1.2.3:
     dependencies:
       deep-extend: 0.4.2
       ini: 1.3.5
@@ -1577,7 +1577,7 @@ packages:
       strip-json-comments: 2.0.1
     dev: true
     resolution:
-      integrity: sha1-2M6ctX6NZNnHut2YdsfDTL48cHc=
+      integrity: sha1-UVdakA+N1oOBxxC0cSwhVMPiA1s=
   /rcfile/1.0.3:
     dependencies:
       debug: 2.6.9
@@ -1647,14 +1647,14 @@ packages:
       integrity: sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
   /registry-auth-token/3.3.1:
     dependencies:
-      rc: 1.2.2
+      rc: 1.2.3
       safe-buffer: 5.1.1
     dev: true
     resolution:
       integrity: sha1-+w0yie4Nmtosu1KvXf5mywcNMAY=
   /registry-url/3.1.0:
     dependencies:
-      rc: 1.2.2
+      rc: 1.2.3
     dev: true
     engines:
       node: '>=0.10.0'
@@ -2181,7 +2181,7 @@ shrinkwrapMinorVersion: 4
 shrinkwrapVersion: 3
 specifiers:
   '@types/mz': 0.0.32
-  '@types/node': ^8.0.28
+  '@types/node': ^9.3.0
   graceful-fs: ^4.1.11
   is-windows: ^1.0.0
   mkdirp-promise: ^5.0.0
