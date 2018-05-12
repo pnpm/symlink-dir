@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@types/mz": "0.0.32",
-    "@types/node": "^9.3.0",
+    "@types/node": "^10.0.8",
     "graceful-fs": "^4.1.11",
     "is-windows": "^1.0.0",
     "mkdirp-promise": "^5.0.0",
