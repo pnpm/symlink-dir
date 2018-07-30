@@ -42,7 +42,7 @@
     "mos": "^2.0.0-alpha.3",
     "mos-plugin-readme": "^1.0.4",
     "rimraf": "^2.6.1",
-    "typescript": "^2.0.3"
+    "typescript": "^3.0.0"
   },
   "dependencies": {
     "@types/mz": "0.0.32",
