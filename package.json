@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "pretest": "rimraf node_modules/src",
-    "test": "npm run tsc",
+    "test": "ts-node test",
     "test-md": "mos t",
     "premd": "rimraf node_modules/src && npm run tsc",
     "md": "mos",
@@ -40,9 +40,14 @@
   },
   "homepage": "https://github.com/zkochan/symlink-dir#readme",
   "devDependencies": {
+    "@types/tape": "^4.2.32",
+    "@types/tempy": "^0.2.0",
     "mos": "^2.0.0-alpha.3",
     "mos-plugin-readme": "^1.0.4",
     "rimraf": "^2.6.1",
+    "tape": "^4.9.1",
+    "tempy": "^0.2.1",
+    "ts-node": "^7.0.1",
     "typescript": "^3.0.0"
   },
   "dependencies": {
@@ -51,7 +56,8 @@
     "graceful-fs": "^4.1.11",
     "is-windows": "^1.0.0",
     "mkdirp-promise": "^5.0.0",
-    "mz": "^2.4.0"
+    "mz": "^2.4.0",
+    "rename-overwrite": "^1.0.3"
   },
   "mos": {
     "plugins": [

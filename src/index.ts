@@ -2,6 +2,7 @@ import fs = require('mz/fs')
 import path = require('path')
 import mkdirp = require('mkdirp-promise')
 import isWindows = require('is-windows')
+import renameOverwrite = require('rename-overwrite')
 
 const IS_WINDOWS = isWindows()
 
@@ -19,7 +20,7 @@ function resolveSrcOnNonWin (src: string, dest: string) {
   return path.relative(path.dirname(dest), path.resolve(src))
 }
 
-async function symlinkDir (src: string, dest: string): Promise<{reused: Boolean}> {
+async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
   dest = path.resolve(dest)
   src = resolveSrc(src, dest)
 
@@ -38,20 +39,38 @@ async function symlinkDir (src: string, dest: string): Promise<{reused: Boolean}
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
-async function forceSymlink (src: string, dest: string): Promise<{reused: Boolean}> {
+async function forceSymlink (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
   try {
     await fs.symlink(src, dest, symlinkType)
     return { reused: false }
   } catch (err) {
     if ((<NodeJS.ErrnoException>err).code !== 'EEXIST') throw err
-
-    const linkString = await fs.readlink(dest)
-    if (src === linkString) {
-      return { reused: true }
-    }
-    await fs.unlink(dest)
-    return await forceSymlink(src, dest)
   }
+
+  let linkString
+  try {
+    linkString = await fs.readlink(dest)
+  } catch (err) {
+    if ((<NodeJS.ErrnoException>err).code !== 'EINVAL') throw err
+
+    // Dest is not a link
+    const ignore = `ignored_${path.basename(dest)}`
+    await renameOverwrite(dest, ignore)
+
+    return Object.assign(
+      {},
+      await forceSymlink(src, dest),
+      {
+        warn: `Link destination was a directory. Renamed "${path.dirname(dest)}${path.sep}{${path.basename(dest)}=>${ignore}}".`,
+      },
+    )
+  }
+
+  if (src === linkString) {
+    return { reused: true }
+  }
+  await fs.unlink(dest)
+  return await forceSymlink(src, dest)
 }
 
 // for backward compatibility
