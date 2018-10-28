@@ -1,6 +1,5 @@
 import fs = require('mz/fs')
 import path = require('path')
-import os = require('os')
 import mkdirp = require('mkdirp-promise')
 import isWindows = require('is-windows')
 
