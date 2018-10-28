@@ -15,7 +15,7 @@ test('rename target folder if it exists', async (t) => {
 
   const { warn } = await symlink('src', 'dest')
 
-  t.ok(warn && warn.indexOf('Link destination was a directory.') === 0, 'dest folder ignored')
+  t.ok(warn && warn.indexOf('Symlink wanted name was occupied by directory or file') === 0, 'dest folder ignored')
 
   t.end()
 })
@@ -30,7 +30,7 @@ test('rename target file if it exists', async (t) => {
 
   const { warn } = await symlink('src', 'dest')
 
-  t.ok(warn && warn.indexOf('Link destination was a directory.') === 0, 'dest folder ignored')
+  t.ok(warn && warn.indexOf('Symlink wanted name was occupied by directory or file') === 0, 'dest folder ignored')
 
   t.end()
 })

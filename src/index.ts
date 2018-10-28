@@ -51,19 +51,15 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
   try {
     linkString = await fs.readlink(dest)
   } catch (err) {
-    if ((<NodeJS.ErrnoException>err).code !== 'EINVAL') throw err
-
     // Dest is not a link
+    const parentDir = path.dirname(dest)
     const ignore = `ignored_${path.basename(dest)}`
-    await renameOverwrite(dest, ignore)
+    await renameOverwrite(dest, path.join(parentDir, ignore))
 
-    return Object.assign(
-      {},
-      await forceSymlink(src, dest),
-      {
-        warn: `Link destination was a directory. Renamed "${path.dirname(dest)}${path.sep}{${path.basename(dest)}=>${ignore}}".`,
-      },
-    )
+    return {
+      ...await forceSymlink(src, dest),
+      warn: `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)}=>${ignore}}".`,
+    }
   }
 
   if (src === linkString) {
