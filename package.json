@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "pretest": "rimraf node_modules/src",
-    "test": "npm run tsc && mos t",
+    "test": "npm run tsc",
+    "test-md": "mos t",
     "premd": "rimraf node_modules/src && npm run tsc",
     "md": "mos",
     "tsc": "rimraf dist && tsc",
