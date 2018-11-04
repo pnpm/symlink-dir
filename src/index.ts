@@ -58,7 +58,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
 
     return {
       ...await forceSymlink(src, dest),
-      warn: `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)}=>${ignore}}".`,
+      warn: `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)} => ${ignore}}".`,
     }
   }
 
