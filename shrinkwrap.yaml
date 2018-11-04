@@ -1,7 +1,7 @@
 dependencies:
   '@types/mz': 0.0.32
-  '@types/node': 10.12.0
-  graceful-fs: 4.1.11
+  '@types/node': 10.12.2
+  graceful-fs: 4.1.14
   is-windows: 1.0.2
   mkdirp-promise: 5.0.1
   mz: 2.7.0
@@ -15,20 +15,20 @@ devDependencies:
   tape: 4.9.1
   tempy: 0.2.1
   ts-node: 7.0.1
-  typescript: 3.1.3
+  typescript: 3.1.6
 packages:
   /@types/mz/0.0.32:
     dependencies:
-      '@types/node': 10.12.0
+      '@types/node': 10.12.2
     dev: false
     resolution:
       integrity: sha512-cy3yebKhrHuOcrJGkfwNHhpTXQLgmXSv1BX+4p32j+VUQ6aP2eJ5cL7OvGcAQx75fCTFaAIIAKewvqL+iwSd4g==
-  /@types/node/10.12.0:
+  /@types/node/10.12.2:
     resolution:
-      integrity: sha512-3TUHC3jsBAB7qVRGxT6lWyYo2v96BMmD2PTcl47H25Lu7UXtFH/2qqmKiVrnel6Ne//0TFYf6uvNX+HW2FRkLQ==
+      integrity: sha512-53ElVDSnZeFUUFIYzI8WLQ25IhWzb6vbddNp8UHlXQyU0ET2RhV5zg0NfubzU7iNMh5bBXb0htCzfvrSVNgzaQ==
   /@types/tape/4.2.32:
     dependencies:
-      '@types/node': 10.12.0
+      '@types/node': 10.12.2
     dev: true
     resolution:
       integrity: sha512-xil0KO5wkPoixdBWGIGolPv9dekf6dVkjjJLAFYchfKcd4DICou67rgGCIO7wAh3i5Ff/6j9IDgZz+GU9cMaqQ==
@@ -455,7 +455,7 @@ packages:
   /configstore/2.1.0:
     dependencies:
       dot-prop: 3.0.0
-      graceful-fs: 4.1.11
+      graceful-fs: 4.1.14
       mkdirp: 0.5.1
       object-assign: 4.1.1
       os-tmpdir: 1.0.2
@@ -762,11 +762,11 @@ packages:
       node: '>=0.10.0 <7'
     resolution:
       integrity: sha1-X4FjWmHkplifGAVp6k44FoClHzU=
-  /graceful-fs/4.1.11:
+  /graceful-fs/4.1.14:
     engines:
-      node: '>=0.4.0'
+      node: '>=6'
     resolution:
-      integrity: sha1-Dovf5NHduIVNZOBOp8AOKgJuVlg=
+      integrity: sha512-ns/IGcSmmGNPP085JCheg0Nombh1QPvSCnlx+2V+byQWRQEIL4ZB5jXJMNIHOFVS1roi85HIi5Ka0h43iWXfcQ==
   /has-ansi/0.1.0:
     dependencies:
       ansi-regex: 0.2.1
@@ -1037,7 +1037,7 @@ packages:
       integrity: sha1-VvjWE5YghHuAF/jx9NeOIRMkFos=
   /load-json-file/1.1.0:
     dependencies:
-      graceful-fs: 4.1.11
+      graceful-fs: 4.1.14
       parse-json: 2.2.0
       pify: 2.3.0
       pinkie-promise: 2.0.1
@@ -1563,7 +1563,7 @@ packages:
       integrity: sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
   /path-type/1.1.0:
     dependencies:
-      graceful-fs: 4.1.11
+      graceful-fs: 4.1.14
       pify: 2.3.0
       pinkie-promise: 2.0.1
     dev: true
@@ -1752,7 +1752,7 @@ packages:
       integrity: sha1-wkvOKig62tW8P1jg1IJJuSN52O8=
   /rename-overwrite/1.0.3:
     dependencies:
-      graceful-fs: 4.1.11
+      graceful-fs: 4.1.14
       rimraf: 2.6.2
       util.promisify: 1.0.0
     dev: false
@@ -1951,7 +1951,7 @@ packages:
   /spdx-correct/3.0.2:
     dependencies:
       spdx-expression-parse: 3.0.0
-      spdx-license-ids: 3.0.1
+      spdx-license-ids: 3.0.2
     dev: true
     resolution:
       integrity: sha512-q9hedtzyXHr5S0A1vEPoK/7l8NpfkFYTq6iCY+Pno2ZbdZR6WexZFtqeVGkGxW3TEJMN914Z55EnAGMmenlIQQ==
@@ -1962,14 +1962,14 @@ packages:
   /spdx-expression-parse/3.0.0:
     dependencies:
       spdx-exceptions: 2.2.0
-      spdx-license-ids: 3.0.1
+      spdx-license-ids: 3.0.2
     dev: true
     resolution:
       integrity: sha512-Yg6D3XpRD4kkOmTpdgbUiEJFKghJH03fiC1OPll5h/0sO6neh2jqRDVHOQ4o/LMea0tgCkbMgea5ip/e+MkWyg==
-  /spdx-license-ids/3.0.1:
+  /spdx-license-ids/3.0.2:
     dev: true
     resolution:
-      integrity: sha512-TfOfPcYGBB5sDuPn3deByxPhmfegAhpDYKSOXZQN81Oyrrif8ZCodOLzK3AesELnCx03kikhyDwh0pfvvQvF8w==
+      integrity: sha512-qky9CVt0lVIECkEsYbNILVnPvycuEBkXoMFLRWsREkomQLevYhtRKC+R91a5TOAQ3bCMjikRwhyaRqj1VYatYg==
   /sprintf-js/1.0.3:
     dev: true
     resolution:
@@ -2202,13 +2202,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-BVwVbPJRspzNh2yfslyT1PSbl5uIk03EZlb493RKHN4qej/D06n1cEhjlOJG69oFsE7OT8XjpTUcYf6pKTLMhw==
-  /typescript/3.1.3:
+  /typescript/3.1.6:
     dev: true
     engines:
       node: '>=4.2.0'
     hasBin: true
     resolution:
-      integrity: sha512-+81MUSyX+BaSo+u2RbozuQk/UWx6hfG0a5gHu4ANEM4sU96XbuIyAB+rWBW1u70c6a5QuZfuYICn3s2UjuHUpA==
+      integrity: sha512-tDMYfVtvpb96msS1lDX9MEdHrW4yOuZ4Kdc4Him9oU796XldPYF/t2+uKoX0BBa0hXXwDlqYQbXY5Rzjzc5hBA==
   /unique-string/1.0.0:
     dependencies:
       crypto-random-string: 1.0.0
@@ -2310,7 +2310,7 @@ packages:
       integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
   /write-file-atomic/1.3.4:
     dependencies:
-      graceful-fs: 4.1.11
+      graceful-fs: 4.1.14
       imurmurhash: 0.1.4
       slide: 1.1.6
     dev: true
@@ -2318,7 +2318,7 @@ packages:
       integrity: sha1-+Aek8LHZ6ROuekgRLmzDrxmRtF8=
   /write-json-file/1.2.0:
     dependencies:
-      graceful-fs: 4.1.11
+      graceful-fs: 4.1.14
       mkdirp: 0.5.1
       object-assign: 4.1.1
       pify: 2.3.0
