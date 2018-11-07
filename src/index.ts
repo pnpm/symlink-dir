@@ -53,7 +53,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
   } catch (err) {
     // Dest is not a link
     const parentDir = path.dirname(dest)
-    const ignore = `ignored_${path.basename(dest)}`
+    const ignore = `.ignored_${path.basename(dest)}`
     await renameOverwrite(dest, path.join(parentDir, ignore))
 
     return {
