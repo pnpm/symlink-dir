@@ -1,3 +1,4 @@
+import betterPathResolve = require('better-path-resolve')
 import fs = require('mz/fs')
 import path = require('path')
 import mkdirp = require('mkdirp-promise')
@@ -13,15 +14,19 @@ const symlinkType = IS_WINDOWS ? 'junction' : 'dir'
 const resolveSrc = IS_WINDOWS ? resolveSrcOnWin: resolveSrcOnNonWin
 
 function resolveSrcOnWin (src: string, dest: string) {
-  return `${path.resolve(src)}\\`
+  return `${src}\\`
 }
 
 function resolveSrcOnNonWin (src: string, dest: string) {
-  return path.relative(path.dirname(dest), path.resolve(src))
+  return path.relative(path.dirname(dest), src)
 }
 
 async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
-  dest = path.resolve(dest)
+  dest = betterPathResolve(dest)
+  src = betterPathResolve(src)
+
+  if (src === dest) throw new Error(`Symlink path is the same as the target path (${src})`)
+
   src = resolveSrc(src, dest)
 
   try {

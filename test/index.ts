@@ -34,3 +34,22 @@ test('rename target file if it exists', async (t) => {
 
   t.end()
 })
+
+test('throw error when symlink path equals the target path', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  let err!: Error
+
+  try {
+    await symlink('src', 'src')
+  } catch (_err) {
+    err = _err
+  }
+
+  t.ok(err)
+  t.ok(err.message.startsWith('Symlink path is the same as the target path ('))
+
+  t.end()
+})

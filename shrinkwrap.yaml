@@ -1,6 +1,7 @@
 dependencies:
   '@types/mz': 0.0.32
   '@types/node': 10.12.18
+  better-path-resolve: 1.0.0
   graceful-fs: 4.1.15
   is-windows: 1.0.2
   mkdirp-promise: 5.0.1
@@ -301,6 +302,14 @@ packages:
   /balanced-match/1.0.0:
     resolution:
       integrity: sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
+  /better-path-resolve/1.0.0:
+    dependencies:
+      is-windows: 1.0.2
+    dev: false
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha512-pbnl5XzGBdrFU/wT4jqmJVPn2B6UHPBOhzMQkY/SPUPB6QtUXtmBHBIwCbXJol93mOpGMnQyP/+BB19q04xj7g==
   /boxen/0.5.1:
     dependencies:
       camelcase: 2.1.1
@@ -2373,6 +2382,7 @@ specifiers:
   '@types/node': ^10.0.8
   '@types/tape': ^4.2.32
   '@types/tempy': ^0.2.0
+  better-path-resolve: ^1.0.0
   graceful-fs: ^4.1.11
   is-windows: ^1.0.0
   mkdirp-promise: ^5.0.0
