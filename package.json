@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@types/mz": "0.0.32",
-    "@types/node": "^10.0.8",
+    "@types/node": "*",
     "better-path-resolve": "^1.0.0",
     "graceful-fs": "^4.1.11",
     "is-windows": "^1.0.0",
