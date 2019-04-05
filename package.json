@@ -58,7 +58,7 @@
     "is-windows": "^1.0.0",
     "mkdirp-promise": "^5.0.0",
     "mz": "^2.4.0",
-    "rename-overwrite": "^1.0.3"
+    "rename-overwrite": "^2.0.0"
   },
   "mos": {
     "plugins": [
