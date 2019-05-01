@@ -1,9 +1,14 @@
 import betterPathResolve = require('better-path-resolve')
-import fs = require('mz/fs')
+import fs = require('fs')
 import path = require('path')
 import mkdirp = require('mkdirp-promise')
 import isWindows = require('is-windows')
 import renameOverwrite = require('rename-overwrite')
+import { promisify } from 'util'
+
+const symlink = promisify(fs.symlink)
+const readlink = promisify(fs.readlink)
+const unlink = promisify(fs.unlink)
 
 const IS_WINDOWS = isWindows()
 
@@ -46,7 +51,7 @@ async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean
  */
 async function forceSymlink (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
   try {
-    await fs.symlink(src, dest, symlinkType)
+    await symlink(src, dest, symlinkType)
     return { reused: false }
   } catch (err) {
     if ((<NodeJS.ErrnoException>err).code !== 'EEXIST') throw err
@@ -54,7 +59,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
 
   let linkString
   try {
-    linkString = await fs.readlink(dest)
+    linkString = await readlink(dest)
   } catch (err) {
     // Dest is not a link
     const parentDir = path.dirname(dest)
@@ -70,7 +75,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
   if (src === linkString) {
     return { reused: true }
   }
-  await fs.unlink(dest)
+  await unlink(dest)
   return await forceSymlink(src, dest)
 }
 

@@ -40,8 +40,8 @@
   },
   "homepage": "https://github.com/zkochan/symlink-dir#readme",
   "devDependencies": {
+    "@types/node": "^11.13.8",
     "@types/tape": "^4.2.32",
-    "@types/tempy": "^0.2.0",
     "mos": "^2.0.0-alpha.3",
     "mos-plugin-readme": "^1.0.4",
     "rimraf": "^2.6.1",
@@ -51,13 +51,10 @@
     "typescript": "^3.0.0"
   },
   "dependencies": {
-    "@types/mz": "0.0.32",
-    "@types/node": "*",
     "better-path-resolve": "^1.0.0",
     "graceful-fs": "^4.1.11",
     "is-windows": "^1.0.0",
     "mkdirp-promise": "^5.0.0",
-    "mz": "^2.4.0",
     "rename-overwrite": "^2.0.1"
   },
   "mos": {

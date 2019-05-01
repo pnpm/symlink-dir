@@ -1,9 +1,12 @@
 ///<reference path="../typings/index.d.ts" />
-import fs = require('mz/fs')
+import fs = require('fs')
 import test = require('tape')
 import tempy = require('tempy')
 import mkdirp = require('mkdirp-promise')
+import { promisify } from 'util'
 import symlink = require('../src')
+
+const writeFile = promisify(fs.writeFile)
 
 test('rename target folder if it exists', async (t) => {
   const temp = tempy.directory()
@@ -25,7 +28,7 @@ test('rename target file if it exists', async (t) => {
   t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
-  await fs.writeFile('dest', '', 'utf8')
+  await writeFile('dest', '', 'utf8')
   await mkdirp('src')
 
   const { warn } = await symlink('src', 'dest')
