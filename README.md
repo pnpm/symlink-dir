@@ -12,7 +12,7 @@
 ## Installation
 
 ```sh
-npm i -S symlink-dir
+<pnpm|yarn|npm> add symlink-dir
 ```
 
 ## CLI Usage

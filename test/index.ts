@@ -2,7 +2,7 @@
 import fs = require('fs')
 import test = require('tape')
 import tempy = require('tempy')
-import mkdirp = require('mkdirp-promise')
+import makeDir = require('make-dir')
 import { promisify } from 'util'
 import symlink = require('../src')
 
@@ -13,8 +13,8 @@ test('rename target folder if it exists', async (t) => {
   t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
-  await mkdirp('src')
-  await mkdirp('dest')
+  await makeDir('src')
+  await makeDir('dest')
 
   const { warn } = await symlink('src', 'dest')
 
@@ -29,7 +29,7 @@ test('rename target file if it exists', async (t) => {
   process.chdir(temp)
 
   await writeFile('dest', '', 'utf8')
-  await mkdirp('src')
+  await makeDir('src')
 
   const { warn } = await symlink('src', 'dest')
 

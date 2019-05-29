@@ -1,7 +1,7 @@
 import betterPathResolve = require('better-path-resolve')
 import fs = require('fs')
 import path = require('path')
-import mkdirp = require('mkdirp-promise')
+import makeDir = require('make-dir')
 import isWindows = require('is-windows')
 import renameOverwrite = require('rename-overwrite')
 import { promisify } from 'util'
@@ -38,7 +38,7 @@ async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean
     return await forceSymlink(src, dest)
   } catch (err) {
     if ((<NodeJS.ErrnoException>err).code === 'ENOENT') {
-      await mkdirp(path.dirname(dest))
+      await makeDir(path.dirname(dest))
       return await forceSymlink(src, dest)
     }
     throw err
