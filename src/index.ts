@@ -2,7 +2,6 @@ import betterPathResolve = require('better-path-resolve')
 import fs = require('fs')
 import path = require('path')
 import makeDir = require('make-dir')
-import isWindows = require('is-windows')
 import renameOverwrite = require('rename-overwrite')
 import { promisify } from 'util'
 
@@ -10,7 +9,7 @@ const symlink = promisify(fs.symlink)
 const readlink = promisify(fs.readlink)
 const unlink = promisify(fs.unlink)
 
-const IS_WINDOWS = isWindows()
+const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
 // Always use "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default
 // lack permission to create them
