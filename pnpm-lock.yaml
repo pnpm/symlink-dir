@@ -1,7 +1,6 @@
 dependencies:
   better-path-resolve: 1.0.0
   graceful-fs: 4.2.2
-  is-windows: 1.0.2
   make-dir: 3.0.0
   rename-overwrite: 2.0.2
 devDependencies:
@@ -2357,7 +2356,6 @@ specifiers:
   '@types/tape': ^4.2.32
   better-path-resolve: ^1.0.0
   graceful-fs: ^4.1.11
-  is-windows: ^1.0.0
   make-dir: ^3.0.0
   mos: ^2.0.0-alpha.3
   mos-plugin-readme: ^1.0.4
