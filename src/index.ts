@@ -53,7 +53,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
     await symlink(src, dest, symlinkType)
     return { reused: false }
   } catch (err) {
-    if ((<NodeJS.ErrnoException>err).code !== 'EEXIST') throw err
+    if ((<NodeJS.ErrnoException>err).code !== 'EEXIST' && (<NodeJS.ErrnoException>err).code !== 'EISDIR') throw err
   }
 
   let linkString
