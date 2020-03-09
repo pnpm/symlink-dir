@@ -10,7 +10,7 @@ devDependencies:
   mos-plugin-readme: 1.0.4
   rimraf: 3.0.0
   tape: 5.0.0
-  tempy: 0.4.0
+  tempy: 0.5.0
   ts-node: 8.3.0_typescript@3.5.3
   typescript: 3.5.3
 lockfileVersion: 5.1
@@ -687,8 +687,8 @@ packages:
   /es-to-primitive/1.2.1:
     dependencies:
       is-callable: 1.1.5
-      is-date-object: 1.0.2
-      is-symbol: 1.0.3
+      is-date-object: 1.0.1
+      is-symbol: 1.0.2
     dev: true
     engines:
       node: '>= 0.4'
@@ -873,12 +873,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-NPUEnOHs3ysGSa8+8k5F7TVBbZE=
-  /has-symbols/1.0.0:
-    dev: true
-    engines:
-      node: '>= 0.4'
-    resolution:
-      integrity: sha1-uhqPGvKg/DllD1yFA2dwQSIGO0Q=
   /has-symbols/1.0.1:
     dev: true
     engines:
@@ -1106,6 +1100,12 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-EtSj3U5o4Lec6428hBc66A2RykQ=
+  /is-stream/2.0.0:
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-XCoy+WlUr7d1+Z8GgSuXmpuUFC9fOhRXglJMx+dwLKTkL44Cjd4W1Z5P+BQZpr+cR93aGP4S/s7Ftw6Nd/kiEw==
   /is-string/1.0.5:
     dev: true
     engines:
@@ -1114,20 +1114,12 @@ packages:
       integrity: sha512-buY6VNRjhQMiF1qWDouloZlQbRhDPCebwxSjxMjxgemYT46YMd2NR0/H+fBhEfWX4A/w9TBJ+ol+okqJKFE6vQ==
   /is-symbol/1.0.2:
     dependencies:
-      has-symbols: 1.0.0
-    dev: true
-    engines:
-      node: '>= 0.4'
-    resolution:
-      integrity: sha512-HS8bZ9ox60yCJLH9snBpIwv9pYUAkcuLhSA1oero1UB5y9aiQpRA8y2ex945AOtCZL1lJDeIk3G5LthswI46Lw==
-  /is-symbol/1.0.3:
-    dependencies:
       has-symbols: 1.0.1
     dev: true
     engines:
       node: '>= 0.4'
     resolution:
-      integrity: sha512-OwijhaRSgqvhm/0ZdAcXNZt9lYdKFpcRDT5ULUuYXPoT794UNOdU+gpT6Rzo7b4V2HUl/op6GqY894AZwv9faQ==
+      integrity: sha512-HS8bZ9ox60yCJLH9snBpIwv9pYUAkcuLhSA1oero1UB5y9aiQpRA8y2ex945AOtCZL1lJDeIk3G5LthswI46Lw==
   /is-typed-array/1.1.3:
     dependencies:
       available-typed-arrays: 1.0.2
@@ -2393,16 +2385,17 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==
-  /tempy/0.4.0:
+  /tempy/0.5.0:
     dependencies:
+      is-stream: 2.0.0
       temp-dir: 2.0.0
-      type-fest: 0.10.0
+      type-fest: 0.12.0
       unique-string: 2.0.0
     dev: true
     engines:
       node: '>=10'
     resolution:
-      integrity: sha512-mKnScm8aXv+cG6l1Nzp6mERGgC4UblbPnSDeQp83JgZ7xqDcnl+7u3+6zXnf1UE7YluDUTEIna1iKYwCSaOk9g==
+      integrity: sha512-VEY96x7gbIRfsxqsafy2l5yVxxp3PhwAGoWMyC2D2Zt5DmEv+2tGiPOrquNRpf21hhGnKLVEsuqleqiZmKG/qw==
   /the-argv/1.0.0:
     dev: true
     resolution:
@@ -2466,12 +2459,12 @@ packages:
       typescript: '>=2.0'
     resolution:
       integrity: sha512-dyNS/RqyVTDcmNM4NIBAeDMpsAdaQ+ojdf0GOLqE6nwJOgzEkdRNzJywhDfwnuvB10oa6NLVG1rUJQCpRN7qoQ==
-  /type-fest/0.10.0:
+  /type-fest/0.12.0:
     dev: true
     engines:
-      node: '>=8'
+      node: '>=10'
     resolution:
-      integrity: sha512-EUV9jo4sffrwlg8s0zDhP0T2WD3pru5Xi0+HTE3zTUmBaZNhfkite9PdSJwdXLwPVW0jnAHT56pZHIOYckPEiw==
+      integrity: sha512-53RyidyjvkGpnWPMF9bQgFtWp+Sl8O2Rp13VavmJgfAP9WWG6q6TkrKU8iyJdnwnfgHI6k2hTlgqH4aSdjoTbg==
   /typescript/3.5.3:
     dev: true
     engines:
@@ -2559,7 +2552,7 @@ packages:
       is-boolean-object: 1.0.1
       is-number-object: 1.0.4
       is-string: 1.0.5
-      is-symbol: 1.0.3
+      is-symbol: 1.0.2
     dev: true
     resolution:
       integrity: sha512-7BT4TwISdDGBgaemWU0N0OU7FeAEJ9Oo2P1PHRm/FCWoEi2VLWC9b6xvxAA3C/NMpxg3HXVgi0sMmGbNUbNepQ==
@@ -2668,6 +2661,6 @@ specifiers:
   rename-overwrite: ^2.0.1
   rimraf: ^3.0.0
   tape: ^5.0.0
-  tempy: ^0.4.0
+  tempy: ^0.5.0
   ts-node: ^8.0.1
   typescript: ^3.0.0
