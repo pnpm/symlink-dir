@@ -1,13 +1,13 @@
 import betterPathResolve = require('better-path-resolve')
-import fs = require('fs')
+import fs = require('graceful-fs')
 import path = require('path')
-import makeDir = require('make-dir')
 import renameOverwrite = require('rename-overwrite')
 import { promisify } from 'util'
 
 const symlink = promisify(fs.symlink)
 const readlink = promisify(fs.readlink)
 const unlink = promisify(fs.unlink)
+const mkdir = promisify(fs.mkdir)
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
@@ -37,7 +37,7 @@ async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean
     return await forceSymlink(src, dest)
   } catch (err) {
     if ((<NodeJS.ErrnoException>err).code === 'ENOENT') {
-      await makeDir(path.dirname(dest))
+      await mkdir(path.dirname(dest), { recursive: true })
       return await forceSymlink(src, dest)
     }
     throw err

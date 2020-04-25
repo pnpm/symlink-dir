@@ -1,20 +1,20 @@
 ///<reference path="../typings/index.d.ts" />
-import fs = require('fs')
+import fs = require('graceful-fs')
 import test = require('tape')
 import tempy = require('tempy')
-import makeDir = require('make-dir')
 import { promisify } from 'util'
 import symlink = require('../src')
 
 const writeFile = promisify(fs.writeFile)
+const mkdir = promisify(fs.mkdir)
 
 test('rename target folder if it exists', async (t) => {
   const temp = tempy.directory()
   t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
-  await makeDir('src')
-  await makeDir('dest')
+  await mkdir('src')
+  await mkdir('dest')
 
   const { warn } = await symlink('src', 'dest')
 
@@ -29,7 +29,7 @@ test('rename target file if it exists', async (t) => {
   process.chdir(temp)
 
   await writeFile('dest', '', 'utf8')
-  await makeDir('src')
+  await mkdir('src')
 
   const { warn } = await symlink('src', 'dest')
 
