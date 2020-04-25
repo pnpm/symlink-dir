@@ -4,7 +4,8 @@
   "description": "Cross-platform directory symlinking",
   "main": "dist/index.js",
   "files": [
-    "dist/"
+    "dist/",
+    "!*.map"
   ],
   "typings": "dist/index.d.ts",
   "bin": "dist/cli.js",
