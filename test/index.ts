@@ -1,8 +1,10 @@
 ///<reference path="../typings/index.d.ts" />
 import fs = require('graceful-fs')
+import path = require('path')
 import test = require('tape')
 import tempy = require('tempy')
 import { promisify } from 'util'
+import writeJsonFile = require('write-json-file')
 import symlink = require('../src')
 
 const writeFile = promisify(fs.writeFile)
@@ -53,6 +55,21 @@ test('throw error when symlink path equals the target path', async (t) => {
 
   t.ok(err)
   t.ok(err.message.startsWith('Symlink path is the same as the target path ('))
+
+  t.end()
+})
+
+test('create parent directory of symlink', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  await writeJsonFile('src/file.json', { ok: true })
+
+  const { warn } = await symlink('src', 'dest/subdir')
+
+  t.notOk(warn)
+  t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
 
   t.end()
 })
