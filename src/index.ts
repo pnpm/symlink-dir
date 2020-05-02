@@ -7,7 +7,6 @@ import { promisify } from 'util'
 const symlink = promisify(fs.symlink)
 const readlink = promisify(fs.readlink)
 const unlink = promisify(fs.unlink)
-const mkdir = promisify(fs.mkdir)
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
@@ -25,7 +24,7 @@ function resolveSrcOnNonWin (src: string, dest: string) {
   return path.relative(path.dirname(dest), src)
 }
 
-async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
+function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
   dest = betterPathResolve(dest)
   src = betterPathResolve(src)
 
@@ -33,15 +32,7 @@ async function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean
 
   src = resolveSrc(src, dest)
 
-  try {
-    return await forceSymlink(src, dest)
-  } catch (err) {
-    if ((<NodeJS.ErrnoException>err).code === 'ENOENT') {
-      await mkdir(path.dirname(dest), { recursive: true })
-      return await forceSymlink(src, dest)
-    }
-    throw err
-  }
+  return forceSymlink(src, dest)
 }
 
 /**

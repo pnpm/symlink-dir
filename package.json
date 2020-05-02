@@ -54,7 +54,7 @@
   "dependencies": {
     "better-path-resolve": "^1.0.0",
     "graceful-fs": "^4.1.11",
-    "rename-overwrite": "^2.0.2"
+    "rename-overwrite": "^3.0.0"
   },
   "mos": {
     "plugins": [
