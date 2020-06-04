@@ -45,11 +45,26 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
     await symlink(src, dest, symlinkType)
     return { reused: false }
   } catch (err) {
-    if ((<NodeJS.ErrnoException>err).code === 'ENOENT') {
-      await mkdir(path.dirname(dest), { recursive: true })
-      return await forceSymlink(src, dest)
+    switch ((<NodeJS.ErrnoException>err).code) {
+      case 'ENOENT':
+        try {
+          await mkdir(path.dirname(dest), { recursive: true })
+        } catch (mkdirError) {
+          mkdirError.message = `Error while trying to symlink "${src}" to "${dest}". ` +
+            `The error happened while trying to create the parent directory for the symlink target. ` +
+            `Details: ${mkdirError}`
+          throw mkdirError
+        }
+        await symlink(src, dest, symlinkType)
+        return { reused: false }
+      case 'EEXIST':
+      case 'EISDIR':
+        // If the target file already exists then we proceed.
+        // Additional checks are done below.
+        break
+      default:
+        throw err
     }
-    if ((<NodeJS.ErrnoException>err).code !== 'EEXIST' && (<NodeJS.ErrnoException>err).code !== 'EISDIR') throw err
   }
 
   let linkString
