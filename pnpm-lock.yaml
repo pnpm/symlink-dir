@@ -10,8 +10,8 @@ devDependencies:
   rimraf: 3.0.2
   tape: 5.0.1
   tempy: 0.5.0
-  ts-node: 8.10.2_typescript@3.9.5
-  typescript: 3.9.5
+  ts-node: 8.10.2_typescript@4.0.2
+  typescript: 4.0.2
   write-json-file: 4.3.0
 lockfileVersion: 5.1
 packages:
@@ -1201,6 +1201,7 @@ packages:
     resolution:
       integrity: sha1-Hq3nrMASA0rYTiOWdn6tn6VJWCE=
   /jsondiffpatch/0.1.43:
+    bundledDependencies: []
     dependencies:
       chalk: 0.5.1
     dev: true
@@ -2361,13 +2362,13 @@ packages:
     dev: true
     resolution:
       integrity: sha1-WFhUf2spB1fulczMZm+1AITEYN0=
-  /ts-node/8.10.2_typescript@3.9.5:
+  /ts-node/8.10.2_typescript@4.0.2:
     dependencies:
       arg: 4.1.3
       diff: 4.0.2
       make-error: 1.3.6
       source-map-support: 0.5.19
-      typescript: 3.9.5
+      typescript: 4.0.2
       yn: 3.1.1
     dev: true
     engines:
@@ -2389,13 +2390,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
-  /typescript/3.9.5:
+  /typescript/4.0.2:
     dev: true
     engines:
       node: '>=4.2.0'
     hasBin: true
     resolution:
-      integrity: sha512-hSAifV3k+i6lEoCJ2k6R2Z/rp/H3+8sdmcn5NrS3/3kE7+RyZXm9aqvxWqjEXHAd8b0pShatpcdMTvEdvAJltQ==
+      integrity: sha512-e4ERvRV2wb+rRZ/IQeb3jm2VxBsirQLpQhdxplZ2MEzGvDkkMmPglecnNDfSUBivMjP93vRbngYYDQqQ/78bcQ==
   /unique-string/2.0.0:
     dependencies:
       crypto-random-string: 2.0.0
@@ -2616,5 +2617,5 @@ specifiers:
   tape: ^5.0.1
   tempy: ^0.5.0
   ts-node: ^8.10.2
-  typescript: ^3.9.5
+  typescript: ^4.0.0
   write-json-file: ^4.3.0
