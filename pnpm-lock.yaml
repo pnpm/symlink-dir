@@ -1,7 +1,6 @@
 dependencies:
   better-path-resolve: 1.0.0
-  graceful-fs: 4.2.4
-  rename-overwrite: 3.0.0
+  rename-overwrite: 3.1.0
 devDependencies:
   '@types/node': 14.0.11
   '@types/tape': 4.13.0
@@ -13,7 +12,7 @@ devDependencies:
   ts-node: 9.0.0_typescript@4.0.2
   typescript: 4.0.2
   write-json-file: 4.3.0
-lockfileVersion: 5.1
+lockfileVersion: 5.2
 packages:
   /@nodelib/fs.scandir/2.1.3:
     dependencies:
@@ -579,7 +578,7 @@ packages:
     resolution:
       integrity: sha512-4FJkXzKXEDB1snCFZlLP4gpC3JILicCpGbzG9f9G7tGqGCzETQ2hWPrcinA9oU4wtf2biUaEH5065UnMeR33oA==
   /core-js/2.6.11:
-    deprecated: 'core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.'
+    deprecated: core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.
     dev: true
     requiresBuild: true
     resolution:
@@ -600,7 +599,7 @@ packages:
     dependencies:
       lru-cache: 4.1.5
       which: 1.3.1
-    deprecated: 'cross-spawn no longer requires a build toolchain, use it instead'
+    deprecated: cross-spawn no longer requires a build toolchain, use it instead
     dev: true
     resolution:
       integrity: sha1-kN6ptpIPA7L3vHSZYVABrubyMX4=
@@ -991,6 +990,7 @@ packages:
     resolution:
       integrity: sha1-X4FjWmHkplifGAVp6k44FoClHzU=
   /graceful-fs/4.2.4:
+    dev: true
     resolution:
       integrity: sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
   /has-ansi/0.1.0:
@@ -2083,15 +2083,14 @@ packages:
     dev: true
     resolution:
       integrity: sha1-Rxt5AU16SWvboB0BihJvj3ctiMY=
-  /rename-overwrite/3.0.0:
+  /rename-overwrite/3.1.0:
     dependencies:
-      graceful-fs: 4.2.4
       rimraf: 3.0.2
     dev: false
     engines:
       node: '>=10.12'
     resolution:
-      integrity: sha512-/XB82wGDkV0bWNWu0PQgv+uuwsp/149HwF00/pRmJFPcX/9xLCvlUdbOjn3/OELh/mBveZ5MGknqGEnURxn5Xw==
+      integrity: sha512-Txm8AChJq2dC/yLiKnZfmhj0fQWL3GoVkfzgqvxpgEXvSrpjX+FuJ3Q2+ErzanA72y3IQLPXuKDgFxCCOsksNA==
   /repeat-string/1.6.1:
     dev: true
     engines:
@@ -2838,10 +2837,9 @@ specifiers:
   '@types/node': ^14.0.11
   '@types/tape': ^4.13.0
   better-path-resolve: ^1.0.0
-  graceful-fs: ^4.1.11
   mos: ^1.3.1
   mos-plugin-readme: ^1.0.4
-  rename-overwrite: ^3.0.0
+  rename-overwrite: ^3.1.0
   rimraf: ^3.0.2
   tape: ^5.0.1
   tempy: ^1.0.0

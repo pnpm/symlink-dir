@@ -1,22 +1,18 @@
 ///<reference path="../typings/index.d.ts" />
-import fs = require('graceful-fs')
+import { promises as fs } from 'fs'
 import path = require('path')
 import test = require('tape')
 import tempy = require('tempy')
-import { promisify } from 'util'
 import writeJsonFile = require('write-json-file')
 import symlink = require('../src')
-
-const writeFile = promisify(fs.writeFile)
-const mkdir = promisify(fs.mkdir)
 
 test('rename target folder if it exists', async (t) => {
   const temp = tempy.directory()
   t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
-  await mkdir('src')
-  await mkdir('dest')
+  await fs.mkdir('src')
+  await fs.mkdir('dest')
 
   const { warn } = await symlink('src', 'dest')
 
@@ -30,8 +26,8 @@ test('rename target file if it exists', async (t) => {
   t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
-  await writeFile('dest', '', 'utf8')
-  await mkdir('src')
+  await fs.writeFile('dest', '', 'utf8')
+  await fs.mkdir('src')
 
   const { warn } = await symlink('src', 'dest')
 

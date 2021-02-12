@@ -1,13 +1,7 @@
 import betterPathResolve = require('better-path-resolve')
-import fs = require('graceful-fs')
+import { promises as fs } from 'fs'
 import path = require('path')
 import renameOverwrite = require('rename-overwrite')
-import { promisify } from 'util'
-
-const symlink = promisify(fs.symlink)
-const readlink = promisify(fs.readlink)
-const unlink = promisify(fs.unlink)
-const mkdir = promisify(fs.mkdir)
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
@@ -42,20 +36,20 @@ function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn
  */
 async function forceSymlink (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
   try {
-    await symlink(src, dest, symlinkType)
+    await fs.symlink(src, dest, symlinkType)
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
       case 'ENOENT':
         try {
-          await mkdir(path.dirname(dest), { recursive: true })
+          await fs.mkdir(path.dirname(dest), { recursive: true })
         } catch (mkdirError) {
           mkdirError.message = `Error while trying to symlink "${src}" to "${dest}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
         }
-        await symlink(src, dest, symlinkType)
+        await fs.symlink(src, dest, symlinkType)
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
@@ -69,7 +63,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
 
   let linkString
   try {
-    linkString = await readlink(dest)
+    linkString = await fs.readlink(dest)
   } catch (err) {
     // Dest is not a link
     const parentDir = path.dirname(dest)
@@ -85,7 +79,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
   if (src === linkString) {
     return { reused: true }
   }
-  await unlink(dest)
+  await fs.unlink(dest)
   return await forceSymlink(src, dest)
 }
 
