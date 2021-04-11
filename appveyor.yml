@@ -4,7 +4,7 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm set fetch-retry-maxtimeout 180000
-  - curl -L https://unpkg.com/@pnpm/self-installer | node
+  - curl -f https://get.pnpm.io/v6.js | node - add --global pnpm@6
   - pnpm install
 matrix:
   fast_finish: true
@@ -14,4 +14,4 @@ test_script:
   - node --version
   - npm --version
   - pnpm --version
-  - npm test
+  - pnpm test

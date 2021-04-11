@@ -1,11 +1,11 @@
 language: node_js
 node_js:
-  - 10
   - 12
   - 14
+  - 15
 sudo: false
 before_install:
-  - curl -L https://unpkg.com/@pnpm/self-installer | node
+  - curl -f https://get.pnpm.io/v6.js | node - add --global pnpm@6
 install:
   - pnpm install
 script:
