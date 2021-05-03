@@ -49,7 +49,7 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
             `Details: ${mkdirError}`
           throw mkdirError
         }
-        await fs.symlink(src, dest, symlinkType)
+        await forceSymlink(src, dest)
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':

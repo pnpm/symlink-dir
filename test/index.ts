@@ -69,3 +69,20 @@ test('create parent directory of symlink', async (t) => {
 
   t.end()
 })
+
+test('concurrently creating the same symlink twice', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  await writeJsonFile('src/file.json', { ok: true })
+
+  await Promise.all([
+    symlink('src', 'dest/subdir'),
+    symlink('src', 'dest/subdir'),
+  ])
+
+  t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+  t.end()
+})
