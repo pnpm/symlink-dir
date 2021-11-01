@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zkochan/symlink-dir.git"
+    "url": "git+https://github.com/pnpm/symlink-dir.git"
   },
   "author": {
     "name": "Zoltan Kochan",
@@ -37,9 +37,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/zkochan/symlink-dir/issues"
+    "url": "https://github.com/pnpm/symlink-dir/issues"
   },
-  "homepage": "https://github.com/zkochan/symlink-dir#readme",
+  "homepage": "https://github.com/pnpm/symlink-dir#readme",
   "devDependencies": {
     "@types/node": "^16.11.6",
     "@types/tape": "^4.13.2",
