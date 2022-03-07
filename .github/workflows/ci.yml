@@ -23,7 +23,7 @@ jobs:
     - name: Checkout Commit
       uses: actions/checkout@v1
     - name: Setup Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
     - name: checkout main
