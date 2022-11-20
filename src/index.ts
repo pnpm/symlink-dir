@@ -19,7 +19,7 @@ function resolveSrcOnNonWin (src: string, dest: string) {
   return path.relative(path.dirname(dest), src)
 }
 
-function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
+function symlinkDir (src: string, dest: string, opts?: { overwrite?: boolean }): Promise<{ reused: Boolean, warn?: string }> {
   dest = betterPathResolve(dest)
   src = betterPathResolve(src)
 
@@ -27,14 +27,14 @@ function symlinkDir (src: string, dest: string): Promise<{ reused: Boolean, warn
 
   src = resolveSrc(src, dest)
 
-  return forceSymlink(src, dest)
+  return forceSymlink(src, dest, opts)
 }
 
 /**
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
-async function forceSymlink (src: string, dest: string): Promise<{ reused: Boolean, warn?: string }> {
+async function forceSymlink (src: string, dest: string, opts?: { overwrite?: boolean }): Promise<{ reused: Boolean, warn?: string }> {
   try {
     await fs.symlink(src, dest, symlinkType)
     return { reused: false }
@@ -53,6 +53,9 @@ async function forceSymlink (src: string, dest: string): Promise<{ reused: Boole
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
+        if (opts?.overwrite === false) {
+          throw err
+        }
         // If the target file already exists then we proceed.
         // Additional checks are done below.
         break

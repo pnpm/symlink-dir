@@ -21,6 +21,25 @@ test('rename target folder if it exists', async (t) => {
   t.end()
 })
 
+test('do not rename target folder if overwrite is set to false', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  await fs.mkdir('src')
+  await fs.mkdir('dest')
+
+  let err!: Error
+  try {
+    await symlink('src', 'dest', { overwrite: false })
+  } catch (_err) {
+    err = _err
+  }
+
+  t.equals(err['code'], 'EEXIST', 'dest folder not ignored')
+  t.end()
+})
+
 test('rename target file if it exists', async (t) => {
   const temp = tempy.directory()
   t.comment(`testing in ${temp}`)
@@ -82,6 +101,22 @@ test('concurrently creating the same symlink twice', async (t) => {
     symlink('src', 'dest/subdir'),
   ])
 
+  t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+  t.end()
+})
+
+test('reusing the existing symlink if it already points to the needed location', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  await writeJsonFile('src/file.json', { ok: true })
+
+  await symlink('src', 'dest/subdir')
+  const { reused } = await symlink('src', 'dest/subdir')
+
+  t.equal(reused, true)
   t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
 
   t.end()

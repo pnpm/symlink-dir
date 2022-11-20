@@ -49,9 +49,13 @@ symlinkDir('src', 'node_modules/src')
 
 ## API
 
-### `symlinkDir(src, dest): Promise<{ reused: boolean, warn?: string }>`
+### `symlinkDir(src, dest, opts?): Promise<{ reused: boolean, warn?: string }>`
 
 Creates a symlink in `dest` that points to `src`.
+
+Options:
+
+* `overwrite` - *boolean* - is `true` by default. When `false`, existing files at dest are not overwritten.
 
 Result:
 
