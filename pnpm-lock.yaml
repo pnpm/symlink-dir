@@ -5,7 +5,7 @@ specifiers:
   '@types/tape': ^4.13.2
   better-path-resolve: ^1.0.0
   rename-overwrite: ^4.0.3
-  rimraf: ^3.0.2
+  rimraf: ^4.0.0
   tape: ^5.6.1
   tempy: ^1.0.1
   ts-node: ^10.9.1
@@ -19,7 +19,7 @@ dependencies:
 devDependencies:
   '@types/node': 16.18.3
   '@types/tape': 4.13.2
-  rimraf: 3.0.2
+  rimraf: 4.1.1
   tape: 5.6.1
   tempy: 1.0.1
   ts-node: 10.9.1_fvpuwgkpfe3dm3hnpcpbcxmb3y
@@ -815,6 +815,12 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
+
+  /rimraf/4.1.1:
+    resolution: {integrity: sha512-Z4Y81w8atcvaJuJuBB88VpADRH66okZAuEm+Jtaufa+s7rZmIz+Hik2G53kGaNytE7lsfXyWktTmfVz0H9xuDg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
 
   /run-parallel/1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
