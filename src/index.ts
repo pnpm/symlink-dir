@@ -34,7 +34,14 @@ function symlinkDir (src: string, dest: string, opts?: { overwrite?: boolean }):
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
-async function forceSymlink (src: string, dest: string, opts?: { overwrite?: boolean }): Promise<{ reused: Boolean, warn?: string }> {
+async function forceSymlink (
+  src: string,
+  dest: string,
+  opts?: {
+    overwrite?: boolean
+    renameTried?: boolean
+  }
+): Promise<{ reused: Boolean, warn?: string }> {
   try {
     await fs.symlink(src, dest, symlinkType)
     return { reused: false }
@@ -49,7 +56,7 @@ async function forceSymlink (src: string, dest: string, opts?: { overwrite?: boo
             `Details: ${mkdirError}`
           throw mkdirError
         }
-        await forceSymlink(src, dest)
+        await forceSymlink(src, dest, opts)
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
@@ -70,12 +77,19 @@ async function forceSymlink (src: string, dest: string, opts?: { overwrite?: boo
   } catch (err) {
     // Dest is not a link
     const parentDir = path.dirname(dest)
-    const ignore = `.ignored_${path.basename(dest)}`
-    await renameOverwrite(dest, path.join(parentDir, ignore))
+    let warn!: string
+    if (opts?.renameTried) {
+      await fs.unlink(dest)
+      warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${path.sep}{${path.basename(dest)}".`
+    } else {
+      const ignore = `.ignored_${path.basename(dest)}`
+      await renameOverwrite(dest, path.join(parentDir, ignore))
+      warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)} => ${ignore}".`
+    }
 
     return {
-      ...await forceSymlink(src, dest),
-      warn: `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)} => ${ignore}}".`,
+      ...await forceSymlink(src, dest, { ...opts, renameTried: true }),
+      warn,
     }
   }
 
@@ -83,7 +97,7 @@ async function forceSymlink (src: string, dest: string, opts?: { overwrite?: boo
     return { reused: true }
   }
   await fs.unlink(dest)
-  return await forceSymlink(src, dest)
+  return await forceSymlink(src, dest, opts)
 }
 
 // for backward compatibility
