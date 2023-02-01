@@ -71,7 +71,7 @@ async function forceSymlink (
     }
   }
 
-  let linkString
+  let linkString: string
   try {
     linkString = await fs.readlink(dest)
   } catch (err) {
@@ -79,6 +79,8 @@ async function forceSymlink (
     const parentDir = path.dirname(dest)
     let warn!: string
     if (opts?.renameTried) {
+      // This is needed in order to fix a mysterious bug that sometimes happens on macOS.
+      // It is hard to reproduce and is described here: https://github.com/pnpm/pnpm/issues/5909#issuecomment-1400066890
       await fs.unlink(dest)
       warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${path.sep}{${path.basename(dest)}".`
     } else {
