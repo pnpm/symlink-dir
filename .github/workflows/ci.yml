@@ -29,7 +29,9 @@ jobs:
     - name: checkout main
       run: git branch -f main origin/main
     - name: install pnpm
-      run: npm install --global @pnpm/exe@6
+      run: |
+        corepack enable
+        corepack prepare pnpm@latest-8 --activate
     - name: pnpm install
       run: pnpm install
     - name: run tests
