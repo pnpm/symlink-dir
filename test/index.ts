@@ -121,3 +121,17 @@ test('reusing the existing symlink if it already points to the needed location',
 
   t.end()
 })
+
+test('symlink file', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  await writeJsonFile('src/file.json', { ok: true })
+
+  await symlink('src/file.json', 'dest/subdir/file.json')
+
+  t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+  t.end()
+})
