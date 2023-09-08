@@ -49,10 +49,10 @@ symlinkDir('src', 'node_modules/src')
 
 ## API
 
-### `symlinkDir(src, dest, opts?): Promise<{ reused: boolean, warn?: string }>`
-### `symlinkDir.sync(src, dest, opts?): { reused: boolean, warn?: string }`
+### `symlinkDir(target, path, opts?): Promise<{ reused: boolean, warn?: string }>`
+### `symlinkDir.sync(target, path, opts?): { reused: boolean, warn?: string }`
 
-Creates a symlink in `dest` that points to `src`.
+Creates the link called `path` pointing to `target`.
 
 Options:
 
@@ -60,7 +60,7 @@ Options:
 
 Result:
 
-* `reused` - *boolean* - is `true` if the symlink already existed pointing to the `src`.
+* `reused` - *boolean* - is `true` if the symlink already existed pointing to the `target`.
 * `warn` - *string* - any issues that happened during linking (it does mean a failure).
 
 ## License

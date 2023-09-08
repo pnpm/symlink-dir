@@ -1,6 +1,6 @@
 import betterPathResolve = require('better-path-resolve')
 import { promises as fs, symlinkSync, mkdirSync, readlinkSync, unlinkSync } from 'fs'
-import path = require('path')
+import pathLib = require('path')
 import renameOverwrite = require('rename-overwrite')
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
@@ -16,18 +16,18 @@ function resolveSrcOnWin (src: string, dest: string) {
 }
 
 function resolveSrcOnNonWin (src: string, dest: string) {
-  return path.relative(path.dirname(dest), src)
+  return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-function symlinkDir (src: string, dest: string, opts?: { overwrite?: boolean }): Promise<{ reused: Boolean, warn?: string }> {
-  dest = betterPathResolve(dest)
-  src = betterPathResolve(src)
+function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean }): Promise<{ reused: Boolean, warn?: string }> {
+  path = betterPathResolve(path)
+  target = betterPathResolve(target)
 
-  if (src === dest) throw new Error(`Symlink path is the same as the target path (${src})`)
+  if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
-  src = resolveSrc(src, dest)
+  target = resolveSrc(target, path)
 
-  return forceSymlink(src, dest, opts)
+  return forceSymlink(target, path, opts)
 }
 
 /**
@@ -35,28 +35,28 @@ function symlinkDir (src: string, dest: string, opts?: { overwrite?: boolean }):
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
 async function forceSymlink (
-  src: string,
-  dest: string,
+  target: string,
+  path: string,
   opts?: {
     overwrite?: boolean
     renameTried?: boolean
   }
 ): Promise<{ reused: Boolean, warn?: string }> {
   try {
-    await fs.symlink(src, dest, symlinkType)
+    await fs.symlink(target, path, symlinkType)
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
       case 'ENOENT':
         try {
-          await fs.mkdir(path.dirname(dest), { recursive: true })
+          await fs.mkdir(pathLib.dirname(path), { recursive: true })
         } catch (mkdirError) {
-          mkdirError.message = `Error while trying to symlink "${src}" to "${dest}". ` +
+          mkdirError.message = `Error while trying to symlink "${target}" to "${path}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
         }
-        await forceSymlink(src, dest, opts)
+        await forceSymlink(target, path, opts)
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
@@ -73,33 +73,33 @@ async function forceSymlink (
 
   let linkString: string
   try {
-    linkString = await fs.readlink(dest)
+    linkString = await fs.readlink(path)
   } catch (err) {
-    // Dest is not a link
-    const parentDir = path.dirname(dest)
+    // path is not a link
+    const parentDir = pathLib.dirname(path)
     let warn!: string
     if (opts?.renameTried) {
       // This is needed in order to fix a mysterious bug that sometimes happens on macOS.
       // It is hard to reproduce and is described here: https://github.com/pnpm/pnpm/issues/5909#issuecomment-1400066890
-      await fs.unlink(dest)
-      warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${path.sep}{${path.basename(dest)}".`
+      await fs.unlink(path)
+      warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${pathLib.sep}{${pathLib.basename(path)}".`
     } else {
-      const ignore = `.ignored_${path.basename(dest)}`
-      await renameOverwrite(dest, path.join(parentDir, ignore))
-      warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)} => ${ignore}".`
+      const ignore = `.ignored_${pathLib.basename(path)}`
+      await renameOverwrite(path, pathLib.join(parentDir, ignore))
+      warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
 
     return {
-      ...await forceSymlink(src, dest, { ...opts, renameTried: true }),
+      ...await forceSymlink(target, path, { ...opts, renameTried: true }),
       warn,
     }
   }
 
-  if (src === linkString) {
+  if (target === linkString) {
     return { reused: true }
   }
-  await fs.unlink(dest)
-  return await forceSymlink(src, dest, opts)
+  await fs.unlink(path)
+  return await forceSymlink(target, path, opts)
 }
 
 // for backward compatibility
@@ -108,41 +108,41 @@ symlinkDir['default'] = symlinkDir
 export = symlinkDir
 
 namespace symlinkDir {
-  export function sync (src: string, dest: string, opts?: { overwrite?: boolean }): { reused: Boolean, warn?: string } {
-    dest = betterPathResolve(dest)
-    src = betterPathResolve(src)
+  export function sync (target: string, path: string, opts?: { overwrite?: boolean }): { reused: Boolean, warn?: string } {
+    path = betterPathResolve(path)
+    target = betterPathResolve(target)
 
-    if (src === dest) throw new Error(`Symlink path is the same as the target path (${src})`)
+    if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
-    src = resolveSrc(src, dest)
+    target = resolveSrc(target, path)
 
-    return forceSymlinkSync(src, dest, opts)
+    return forceSymlinkSync(target, path, opts)
   }
 }
 
 function forceSymlinkSync (
-  src: string,
-  dest: string,
+  target: string,
+  path: string,
   opts?: {
     overwrite?: boolean
     renameTried?: boolean
   }
 ): { reused: Boolean, warn?: string } {
   try {
-    symlinkSync(src, dest, symlinkType)
+    symlinkSync(target, path, symlinkType)
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
       case 'ENOENT':
         try {
-          mkdirSync(path.dirname(dest), { recursive: true })
+          mkdirSync(pathLib.dirname(path), { recursive: true })
         } catch (mkdirError) {
-          mkdirError.message = `Error while trying to symlink "${src}" to "${dest}". ` +
+          mkdirError.message = `Error while trying to symlink "${target}" to "${path}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
         }
-        forceSymlinkSync(src, dest, opts)
+        forceSymlinkSync(target, path, opts)
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
@@ -159,31 +159,31 @@ function forceSymlinkSync (
 
   let linkString: string
   try {
-    linkString = readlinkSync(dest)
+    linkString = readlinkSync(path)
   } catch (err) {
-    // Dest is not a link
-    const parentDir = path.dirname(dest)
+    // path is not a link
+    const parentDir = pathLib.dirname(path)
     let warn!: string
     if (opts?.renameTried) {
       // This is needed in order to fix a mysterious bug that sometimes happens on macOS.
       // It is hard to reproduce and is described here: https://github.com/pnpm/pnpm/issues/5909#issuecomment-1400066890
-      unlinkSync(dest)
-      warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${path.sep}{${path.basename(dest)}".`
+      unlinkSync(path)
+      warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${pathLib.sep}{${pathLib.basename(path)}".`
     } else {
-      const ignore = `.ignored_${path.basename(dest)}`
-      renameOverwrite.sync(dest, path.join(parentDir, ignore))
-      warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${path.sep}{${path.basename(dest)} => ${ignore}".`
+      const ignore = `.ignored_${pathLib.basename(path)}`
+      renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
+      warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
 
     return {
-      ...forceSymlinkSync(src, dest, { ...opts, renameTried: true }),
+      ...forceSymlinkSync(target, path, { ...opts, renameTried: true }),
       warn,
     }
   }
 
-  if (src === linkString) {
+  if (target === linkString) {
     return { reused: true }
   }
-  unlinkSync(dest)
-  return forceSymlinkSync(src, dest, opts)
+  unlinkSync(path)
+  return forceSymlinkSync(target, path, opts)
 }
