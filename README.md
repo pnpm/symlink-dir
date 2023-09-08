@@ -12,12 +12,12 @@
 ## Installation
 
 ```sh
-<pnpm|yarn|npm> add symlink-dir
+pnpm add symlink-dir
 ```
 
 ## CLI Usage
 
-Lets suppose you'd like to self-require your package. You can link it to its own node_modules:
+Lets suppose you'd like to self-require your package. You can link it to its own `node_modules`:
 
 ```sh
 # from -> to
@@ -50,6 +50,7 @@ symlinkDir('src', 'node_modules/src')
 ## API
 
 ### `symlinkDir(src, dest, opts?): Promise<{ reused: boolean, warn?: string }>`
+### `symlinkDir.sync(src, dest, opts?): { reused: boolean, warn?: string }`
 
 Creates a symlink in `dest` that points to `src`.
 

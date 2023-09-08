@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "pretest": "rimraf node_modules/src",
-    "test": "ts-node test",
+    "test": "ts-node test/sync.ts && ts-node test/async.ts",
     "premd": "rimraf node_modules/src && npm run tsc",
     "tsc": "rimraf dist && tsc",
     "prepublishOnly": "npm run tsc"
