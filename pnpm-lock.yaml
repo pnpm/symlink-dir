@@ -17,8 +17,8 @@ devDependencies:
     specifier: ^20.0.0
     version: 20.8.8
   '@types/tape':
-    specifier: ^4.13.2
-    version: 4.13.2
+    specifier: ^5.0.0
+    version: 5.6.4
   rimraf:
     specifier: ^3.0.2
     version: 3.0.2
@@ -106,8 +106,15 @@ packages:
       undici-types: 5.25.3
     dev: true
 
-  /@types/tape@4.13.2:
-    resolution: {integrity: sha512-V1ez/RtYRGN9cNYApw5xf27DpMkTB0033X6a2i3KUmKhSojBfbWN0i3EgZxboUG96WJLHLdOyZ01aiZwVW5aSA==}
+  /@types/tape@5.6.4:
+    resolution: {integrity: sha512-EmL4fJpZyByNCkupLLcJhneqcnT+rQUG5fWKNCsZyBK1x7nUuDTwwEerc4biEMZgvSK2+FXr775aLeXhKXK4Yw==}
+    dependencies:
+      '@types/node': 20.8.8
+      '@types/through': 0.0.33
+    dev: true
+
+  /@types/through@0.0.33:
+    resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
     dependencies:
       '@types/node': 20.8.8
     dev: true
