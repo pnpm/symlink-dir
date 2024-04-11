@@ -19,7 +19,7 @@ function resolveSrcOnNonWin (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean }): Promise<{ reused: Boolean, warn?: string }> {
+function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean }): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
   target = betterPathResolve(target)
 
@@ -41,7 +41,7 @@ async function forceSymlink (
     overwrite?: boolean
     renameTried?: boolean
   }
-): Promise<{ reused: Boolean, warn?: string }> {
+): Promise<{ reused: boolean, warn?: string }> {
   try {
     await fs.symlink(target, path, symlinkType)
     return { reused: false }
@@ -108,7 +108,7 @@ symlinkDir['default'] = symlinkDir
 export = symlinkDir
 
 namespace symlinkDir {
-  export function sync (target: string, path: string, opts?: { overwrite?: boolean }): { reused: Boolean, warn?: string } {
+  export function sync (target: string, path: string, opts?: { overwrite?: boolean }): { reused: boolean, warn?: string } {
     path = betterPathResolve(path)
     target = betterPathResolve(target)
 
@@ -127,7 +127,7 @@ function forceSymlinkSync (
     overwrite?: boolean
     renameTried?: boolean
   }
-): { reused: Boolean, warn?: string } {
+): { reused: boolean, warn?: string } {
   try {
     symlinkSync(target, path, symlinkType)
     return { reused: false }
