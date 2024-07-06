@@ -8,9 +8,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '12'
-          - '14'
-          - '16'
+          - '18.12'
+          - '20'
+          - '22'
         platform:
           - ubuntu-latest
           - windows-latest
@@ -28,8 +28,11 @@ jobs:
         node-version: ${{ matrix.node }}
     - name: checkout main
       run: git branch -f main origin/main
-    - name: install pnpm
-      run: npm install --global @pnpm/exe@6
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: latest-9
+        standalone: true
     - name: pnpm install
       run: pnpm install
     - name: run tests
