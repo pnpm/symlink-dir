@@ -42,6 +42,15 @@ async function forceSymlink (
     renameTried?: boolean
   }
 ): Promise<{ reused: boolean, warn?: string }> {
+  // The happy path: the symlink already exists, and is correct (which is true
+  // in most already-initialized projects).
+  try {
+    const actualPath = await fs.readlink(path)
+    if (actualPath === target) {
+      return { reused: true }
+    }
+  } catch (e) { /* logic below handles all other cases */ }
+
   try {
     await fs.symlink(target, path, symlinkType)
     return { reused: false }
