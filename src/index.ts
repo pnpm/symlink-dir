@@ -42,6 +42,7 @@ async function forceSymlink (
     renameTried?: boolean
   }
 ): Promise<{ reused: boolean, warn?: string }> {
+  let initialErr: Error
   try {
     await fs.symlink(target, path, symlinkType)
     return { reused: false }
@@ -60,9 +61,7 @@ async function forceSymlink (
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
-        if (opts?.overwrite === false) {
-          throw err
-        }
+        initialErr = err
         // If the target file already exists then we proceed.
         // Additional checks are done below.
         break
@@ -75,6 +74,9 @@ async function forceSymlink (
   try {
     linkString = await fs.readlink(path)
   } catch (err) {
+    if (opts?.overwrite === false) {
+      throw initialErr
+    }
     // path is not a link
     const parentDir = pathLib.dirname(path)
     let warn!: string
@@ -97,6 +99,9 @@ async function forceSymlink (
 
   if (target === linkString) {
     return { reused: true }
+  }
+  if (opts?.overwrite === false) {
+    throw initialErr
   }
   await fs.unlink(path)
   return await forceSymlink(target, path, opts)
@@ -128,10 +133,12 @@ function forceSymlinkSync (
     renameTried?: boolean
   }
 ): { reused: boolean, warn?: string } {
+  let initialErr: Error
   try {
     symlinkSync(target, path, symlinkType)
     return { reused: false }
   } catch (err) {
+    initialErr = err
     switch ((<NodeJS.ErrnoException>err).code) {
       case 'ENOENT':
         try {
@@ -146,9 +153,6 @@ function forceSymlinkSync (
         return { reused: false }
       case 'EEXIST':
       case 'EISDIR':
-        if (opts?.overwrite === false) {
-          throw err
-        }
         // If the target file already exists then we proceed.
         // Additional checks are done below.
         break
@@ -161,6 +165,9 @@ function forceSymlinkSync (
   try {
     linkString = readlinkSync(path)
   } catch (err) {
+    if (opts?.overwrite === false) {
+      throw initialErr
+    }
     // path is not a link
     const parentDir = pathLib.dirname(path)
     let warn!: string
@@ -183,6 +190,9 @@ function forceSymlinkSync (
 
   if (target === linkString) {
     return { reused: true }
+  }
+  if (opts?.overwrite === false) {
+    throw initialErr
   }
   unlinkSync(path)
   return forceSymlinkSync(target, path, opts)
