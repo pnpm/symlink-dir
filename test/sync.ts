@@ -48,14 +48,7 @@ test('do not fail if correct target folder already exists', async (t) => {
   await fs.mkdir('src')
   symlink.sync('src', 'dest', { overwrite: false })
 
-  let err!: Error
-  try {
-    symlink.sync('src', 'dest', { overwrite: false })
-  } catch (_err) {
-    err = _err
-  }
-
-  t.equals(err, undefined)
+  t.equals(symlink.sync('src', 'dest', { overwrite: false }).reused, true)
   t.end()
 })
 
