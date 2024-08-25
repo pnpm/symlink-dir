@@ -40,6 +40,18 @@ test('do not rename target folder if overwrite is set to false', async (t) => {
   t.end()
 })
 
+test('do not fail if correct target folder already exists', async (t) => {
+  const temp = tempy.directory()
+  t.comment(`testing in ${temp}`)
+  process.chdir(temp)
+
+  await fs.mkdir('src')
+  await symlink('src', 'dest', { overwrite: false })
+
+  t.equal((await symlink('src', 'dest', { overwrite: false })).reused, true)
+  t.end()
+})
+
 test('rename target file if it exists', async (t) => {
   const temp = tempy.directory()
   t.comment(`testing in ${temp}`)
