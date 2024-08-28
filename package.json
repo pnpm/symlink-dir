@@ -46,7 +46,7 @@
     "tempy": "^1.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
-    "write-json-file": "^4.3.0"
+    "write-json-file": "^6.0.0"
   },
   "dependencies": {
     "better-path-resolve": "^1.0.0",
