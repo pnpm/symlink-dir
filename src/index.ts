@@ -6,18 +6,26 @@ import renameOverwrite = require('rename-overwrite')
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
-// Always use "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default
+// Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
 // lack permission to create them
-const symlinkType = IS_WINDOWS ? 'junction' : 'dir'
+let symlinkType: 'dir' | 'junction' = 'dir'
 
-const resolveSrc = IS_WINDOWS ? resolveSrcOnWin: resolveSrcOnNonWin
+let symlinkPermissionCheckDone = !IS_WINDOWS
 
-function resolveSrcOnWin (src: string, dest: string) {
+let resolveSrc = resolveSrcOnTrueSymlink
+
+function resolveSrcOnWinJunction (src: string, dest: string) {
   return `${src}\\`
 }
 
-function resolveSrcOnNonWin (src: string, dest: string) {
+function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
+}
+
+function resolveExistingLinkTarget (linkTarget: string, linkPath: string) {
+  if (!IS_WINDOWS) return linkTarget
+  // Can be absolute (junction or symlink) or relative (symlink) in Windows, so we need to unify to absolute path
+  return betterPathResolve(pathLib.isAbsolute(linkTarget) ? linkTarget : pathLib.resolve(pathLib.dirname(linkPath), linkTarget))
 }
 
 function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean }): Promise<{ reused: boolean, warn?: string }> {
@@ -25,8 +33,6 @@ function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean 
   target = betterPathResolve(target)
 
   if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
-
-  target = resolveSrc(target, path)
 
   return forceSymlink(target, path, opts)
 }
@@ -45,7 +51,23 @@ async function forceSymlink (
 ): Promise<{ reused: boolean, warn?: string }> {
   let initialErr: Error
   try {
-    await fs.symlink(target, path, symlinkType)
+    if (symlinkPermissionCheckDone) {
+      await fs.symlink(resolveSrc(target, path), path, symlinkType)
+    } else {
+      try {
+        await fs.symlink(resolveSrc(target, path), path, symlinkType)
+        symlinkPermissionCheckDone = true
+      } catch (err) {
+        if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+          await fs.symlink(resolveSrcOnWinJunction(target, path), path, 'junction')
+          symlinkType = 'junction'
+          resolveSrc = resolveSrcOnWinJunction
+          symlinkPermissionCheckDone = true
+        } else {
+          throw err
+        }
+      }
+    }
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
@@ -53,7 +75,7 @@ async function forceSymlink (
         try {
           await fs.mkdir(pathLib.dirname(path), { recursive: true })
         } catch (mkdirError) {
-          mkdirError.message = `Error while trying to symlink "${target}" to "${path}". ` +
+          mkdirError.message = `Error while trying to symlink "${resolveSrc(target, path)}" to "${path}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
@@ -106,7 +128,7 @@ async function forceSymlink (
     }
   }
 
-  if (pathLib.relative(target, linkString) === '') {
+  if (pathLib.relative(target, resolveExistingLinkTarget(linkString, path)) === '') {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
@@ -134,8 +156,6 @@ namespace symlinkDir {
 
     if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
-    target = resolveSrc(target, path)
-
     return forceSymlinkSync(target, path, opts)
   }
 }
@@ -150,7 +170,23 @@ function forceSymlinkSync (
 ): { reused: boolean, warn?: string } {
   let initialErr: Error
   try {
-    symlinkSync(target, path, symlinkType)
+    if (symlinkPermissionCheckDone) {
+      symlinkSync(resolveSrc(target, path), path, symlinkType)
+    } else {
+      try {
+        symlinkSync(resolveSrc(target, path), path, symlinkType)
+        symlinkPermissionCheckDone = true
+      } catch (err) {
+        if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+          symlinkSync(resolveSrcOnWinJunction(target, path), path, 'junction')
+          symlinkType = 'junction'
+          resolveSrc = resolveSrcOnWinJunction
+          symlinkPermissionCheckDone = true
+        } else {
+          throw err
+        }
+      }
+    }
     return { reused: false }
   } catch (err) {
     initialErr = err
@@ -159,7 +195,7 @@ function forceSymlinkSync (
         try {
           mkdirSync(pathLib.dirname(path), { recursive: true })
         } catch (mkdirError) {
-          mkdirError.message = `Error while trying to symlink "${target}" to "${path}". ` +
+          mkdirError.message = `Error while trying to symlink "${resolveSrc(target, path)}" to "${path}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
@@ -210,7 +246,7 @@ function forceSymlinkSync (
     }
   }
 
-  if (pathLib.relative(target, linkString) === '') {
+  if (pathLib.relative(target, resolveExistingLinkTarget(linkString, path)) === '') {
     return { reused: true }
   }
   if (opts?.overwrite === false) {

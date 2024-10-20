@@ -6,7 +6,8 @@
 [![npm version](https://img.shields.io/npm/v/symlink-dir.svg)](https://www.npmjs.com/package/symlink-dir)
 <!--/@-->
 
-* Always uses "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default lack permission to create them
+* Uses "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default lack permission to create them
+* If you prefer symbolic links in Windows, turn on the developer mode
 * Any file or directory, that has the destination name, is renamed before creating the link
 
 ## Installation
