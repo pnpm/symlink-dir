@@ -1,6 +1,6 @@
 {
   "name": "symlink-dir",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "Cross-platform directory symlinking",
   "main": "dist/index.js",
   "files": [
