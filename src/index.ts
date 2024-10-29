@@ -1,5 +1,6 @@
 import betterPathResolve = require('better-path-resolve')
 import { promises as fs, symlinkSync, mkdirSync, readlinkSync, unlinkSync } from 'fs'
+import util = require('util')
 import pathLib = require('path')
 import renameOverwrite = require('rename-overwrite')
 
@@ -103,7 +104,13 @@ async function forceSymlink (
   if (opts?.overwrite === false) {
     throw initialErr
   }
-  await fs.unlink(path)
+  try {
+    await fs.unlink(path)
+  } catch (error) {
+    if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+      throw error
+    }
+  }
   return await forceSymlink(target, path, opts)
 }
 
@@ -194,6 +201,12 @@ function forceSymlinkSync (
   if (opts?.overwrite === false) {
     throw initialErr
   }
-  unlinkSync(path)
+  try {
+    unlinkSync(path)
+  } catch (error) {
+    if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+      throw error
+    }
+  }
   return forceSymlinkSync(target, path, opts)
 }
