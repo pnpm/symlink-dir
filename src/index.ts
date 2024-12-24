@@ -1,10 +1,26 @@
 import betterPathResolve = require('better-path-resolve')
 import { promises as fs, symlinkSync, mkdirSync, readlinkSync, unlinkSync } from 'fs'
+import { execSync } from 'child_process'
 import util = require('util')
 import pathLib = require('path')
 import renameOverwrite = require('rename-overwrite')
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
+
+// In Windows system exFAT drive, symlink will result in error.
+function currentDriveIsExFAT (dir: string): boolean {
+  const currentDrive = `${dir.split(':')[0]}:`
+  const output = execSync(`wmic logicaldisk where "DeviceID='${currentDrive}'" get FileSystem`).toString()
+  const lines = output.trim().split('\n')
+  const name = lines.length > 1 ? lines[1].trim() : ''
+  return name === 'exFAT'
+}
+
+function extendMessage (err: NodeJS.ErrnoException) { // eslint-disable-line @typescript-eslint/no-explicit-any
+  if (IS_WINDOWS && (err.code === 'ENOENT' || err.code === 'EISDIR') && currentDriveIsExFAT(process.cwd())) {
+    err.message += '\n\nThe current drive is exFAT, which does not support symlinks. This will cause installation to fail. You can set the node-linker to "hoisted" to avoid this issue.'
+  }
+}
 
 // Always use "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default
 // lack permission to create them
@@ -76,6 +92,7 @@ async function forceSymlink (
     linkString = await fs.readlink(path)
   } catch (err) {
     if (opts?.overwrite === false) {
+      extendMessage(initialErr)
       throw initialErr
     }
     // path is not a link
@@ -88,7 +105,12 @@ async function forceSymlink (
       warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${pathLib.sep}{${pathLib.basename(path)}".`
     } else {
       const ignore = `.ignored_${pathLib.basename(path)}`
-      await renameOverwrite(path, pathLib.join(parentDir, ignore))
+      try {
+        await renameOverwrite(path, pathLib.join(parentDir, ignore))
+      } catch (error) {
+        extendMessage(error)
+        throw error
+      }
       warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
 
@@ -102,12 +124,14 @@ async function forceSymlink (
     return { reused: true }
   }
   if (opts?.overwrite === false) {
+    extendMessage(initialErr)
     throw initialErr
   }
   try {
     await fs.unlink(path)
   } catch (error) {
     if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+      extendMessage(error)
       throw error
     }
   }
@@ -173,6 +197,7 @@ function forceSymlinkSync (
     linkString = readlinkSync(path)
   } catch (err) {
     if (opts?.overwrite === false) {
+      extendMessage(initialErr)
       throw initialErr
     }
     // path is not a link
@@ -185,7 +210,12 @@ function forceSymlinkSync (
       warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${pathLib.sep}{${pathLib.basename(path)}".`
     } else {
       const ignore = `.ignored_${pathLib.basename(path)}`
-      renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
+      try {
+        renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
+      } catch (error) {
+        extendMessage(error)
+        throw error
+      }
       warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
 
@@ -199,12 +229,14 @@ function forceSymlinkSync (
     return { reused: true }
   }
   if (opts?.overwrite === false) {
+    extendMessage(initialErr)
     throw initialErr
   }
   try {
     unlinkSync(path)
   } catch (error) {
     if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+      extendMessage(error)
       throw error
     }
   }
