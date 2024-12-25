@@ -88,7 +88,15 @@ async function forceSymlink (
       warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${pathLib.sep}{${pathLib.basename(path)}".`
     } else {
       const ignore = `.ignored_${pathLib.basename(path)}`
-      await renameOverwrite(path, pathLib.join(parentDir, ignore))
+      try {
+        await renameOverwrite(path, pathLib.join(parentDir, ignore))
+      } catch (error) {
+        if (util.types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
+          throw initialErr
+        }
+        throw error
+      }
+
       warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
 
@@ -185,7 +193,14 @@ function forceSymlinkSync (
       warn = `Symlink wanted name was occupied by directory or file. Old entity removed: "${parentDir}${pathLib.sep}{${pathLib.basename(path)}".`
     } else {
       const ignore = `.ignored_${pathLib.basename(path)}`
-      renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
+      try {
+        renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
+      } catch (error) {
+        if (util.types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
+          throw initialErr
+        }
+        throw error
+      }
       warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
 
