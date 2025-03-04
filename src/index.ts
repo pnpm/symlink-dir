@@ -105,8 +105,8 @@ async function forceSymlink (
       warn,
     }
   }
-
-  if (target === linkString) {
+  // fs.readlink(path) returns a string with no trailing slashes on node 22
+  if (target === linkString || target.replace(/\\\\$/, '') === linkString) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
