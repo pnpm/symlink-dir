@@ -29,7 +29,7 @@ jobs:
     - name: Install pnpm
       uses: pnpm/action-setup@v4
       with:
-        version: latest-9
+        version: latest-10
         standalone: true
     - name: pnpm install
       run: pnpm install
