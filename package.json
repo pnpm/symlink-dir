@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/pnpm/symlink-dir#readme",
   "devDependencies": {
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.0.0",
     "@types/tape": "^5.6.4",
     "rimraf": "^3.0.2",
     "tape": "^5.8.1",
