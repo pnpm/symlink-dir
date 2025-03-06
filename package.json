@@ -39,18 +39,18 @@
   },
   "homepage": "https://github.com/pnpm/symlink-dir#readme",
   "devDependencies": {
-    "@types/node": "^20.17.23",
-    "@types/tape": "^5.8.1",
+    "@types/node": "^20.14.10",
+    "@types/tape": "^5.6.4",
     "rimraf": "^3.0.2",
-    "tape": "^5.9.0",
+    "tape": "^5.8.1",
     "tempy": "^1.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.2",
+    "typescript": "^5.5.3",
     "write-json-file": "^4.3.0"
   },
   "dependencies": {
     "better-path-resolve": "^1.0.0",
-    "rename-overwrite": "^6.0.2"
+    "rename-overwrite": "^6.0.0"
   },
   "mos": {
     "plugins": [
