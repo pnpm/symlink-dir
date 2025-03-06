@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "better-path-resolve": "^1.0.0",
-    "rename-overwrite": "^6.0.0"
+    "rename-overwrite": "^6.0.2"
   },
   "mos": {
     "plugins": [
