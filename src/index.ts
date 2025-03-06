@@ -106,7 +106,7 @@ async function forceSymlink (
     }
   }
 
-  if (target === linkString) {
+  if (pathLib.relative(target, linkString) === '') {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
@@ -210,7 +210,7 @@ function forceSymlinkSync (
     }
   }
 
-  if (target === linkString) {
+  if (pathLib.relative(target, linkString) === '') {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
