@@ -1,4 +1,6 @@
 configDependencies:
-  '@pnpm/better-defaults': 0.2.0+sha512-90iZf6xgZTlNuUVn5djvCXM720TgZrYmmb8jmjIv5c5efx3I46rmCcT2j5nlZJ6VrvghNgUaI2y/rnHe2W4L6g==
+  '@pnpm/better-defaults': 0.2.2+sha512-CxhLHXeW4XS/wludrcB9wgfVQmWYP0toYW5W700Aal5O6LK8qZmchvlCd/pRckBmAOWn8vT3AHokuyHvzLUv3A==
+
 engineStrict: true
+
 pnpmfile: node_modules/.pnpm-config/@pnpm/better-defaults/pnpmfile.cjs
