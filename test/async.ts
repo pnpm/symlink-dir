@@ -7,9 +7,9 @@ import writeJsonFile = require('write-json-file')
 import symlink = require('../src')
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
-  console.log('Emulating Windows non-develop mode')
+  console.log('Emulating Windows non-developer mode')
   if (!(fs.symlink as {tookOver?: boolean}).tookOver) {
-      console.error('ERROR: Non-develop mode emulation failed')
+      console.error('ERROR: Non-developer mode emulation failed')
       process.exit(1)
   }
 }
