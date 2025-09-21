@@ -34,6 +34,12 @@ function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean 
   return forceSymlink(target, path, opts)
 }
 
+function canSymlinkBeReused (target: string, path: string, linkString: string): boolean {
+  // path is going to be that of the symlink, so never be a (drive) root, therefore dirname(path) is different from path
+  const linkFromPwd = pathLib.isAbsolute(linkString) ? linkString : pathLib.join(pathLib.dirname(path), linkString)
+  return pathLib.relative(target, linkFromPwd) === ''
+}
+
 /**
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
@@ -124,8 +130,7 @@ async function forceSymlink (
     }
   }
 
-  // pathLib.relative handles the case where one is absolute and the other is relative
-  if (pathLib.relative(target, linkString) === '') {
+  if (canSymlinkBeReused(target, path, linkString)) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
@@ -241,8 +246,7 @@ function forceSymlinkSync (
     }
   }
 
-  // pathLib.relative handles the case where one is absolute and the other is relative
-  if (pathLib.relative(target, linkString) === '') {
+  if (canSymlinkBeReused(target, path, linkString)) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
