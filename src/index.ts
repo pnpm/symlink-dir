@@ -25,12 +25,6 @@ function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-function resolveExistingLinkTarget (linkTarget: string, linkPath: string) {
-  if (!IS_WINDOWS) return linkTarget
-  // Can be absolute (junction or symlink) or relative (symlink) in Windows, so we need to unify to absolute path
-  return betterPathResolve(pathLib.isAbsolute(linkTarget) ? linkTarget : pathLib.resolve(pathLib.dirname(linkPath), linkTarget))
-}
-
 function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean }): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
   target = betterPathResolve(target)
@@ -130,7 +124,8 @@ async function forceSymlink (
     }
   }
 
-  if (pathLib.relative(target, resolveExistingLinkTarget(linkString, path)) === '') {
+  // pathLib.relative handles the case where one is absolute and the other is relative
+  if (pathLib.relative(target, linkString) === '') {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
@@ -246,7 +241,8 @@ function forceSymlinkSync (
     }
   }
 
-  if (pathLib.relative(target, resolveExistingLinkTarget(linkString, path)) === '') {
+  // pathLib.relative handles the case where one is absolute and the other is relative
+  if (pathLib.relative(target, linkString) === '') {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
