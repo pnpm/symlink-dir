@@ -173,6 +173,7 @@ function forceSymlinkSync (
   let initialErr: Error
   try {
     if (symlinkType !== undefined) {
+      // avoid extra try block for second and subsequent calls for better performance
       symlinkSync(resolveSrc(target, path, symlinkType), path, symlinkType)
     } else {
       try {
