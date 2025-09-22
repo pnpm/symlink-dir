@@ -8,13 +8,11 @@ const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<strin
 
 // Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
 // lack permission to create them
-let symlinkType: 'dir' | 'junction' | undefined = IS_WINDOWS ? undefined : 'dir'
-
-function resolveSrc(src: string, dest: string, type: 'dir' | 'junction') {
-  if (type === 'junction') {
-    return resolveSrcOnWinJunction(src, dest)
-  }
-  return resolveSrcOnTrueSymlink(src, dest)
+let symlinkType: 'dir' | 'junction' | undefined
+let resolveSrc: undefined | typeof resolveSrcOnTrueSymlink
+if (!IS_WINDOWS) {
+  symlinkType = 'dir'
+  resolveSrc = resolveSrcOnTrueSymlink
 }
 
 function resolveSrcOnWinJunction (src: string, dest: string) {
@@ -56,15 +54,17 @@ async function forceSymlink (
   try {
     if (symlinkType !== undefined) {
       // avoid extra try block for second and subsequent calls for better performance
-      await fs.symlink(resolveSrc(target, path, symlinkType), path, symlinkType)
+      await fs.symlink(resolveSrc!(target, path), path, symlinkType)
     } else {
       try {
         await fs.symlink(resolveSrcOnTrueSymlink(target, path), path, 'dir')
         symlinkType = 'dir'
+        resolveSrc = resolveSrcOnTrueSymlink
       } catch (err) {
         if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
           await fs.symlink(resolveSrcOnWinJunction(target, path), path, 'junction')
           symlinkType = 'junction'
+          resolveSrc = resolveSrcOnWinJunction
         } else {
           throw err
         }
@@ -77,7 +77,7 @@ async function forceSymlink (
         try {
           await fs.mkdir(pathLib.dirname(path), { recursive: true })
         } catch (mkdirError) {
-          mkdirError.message = `Error while trying to symlink "${resolveSrc(target, path, symlinkType ?? 'dir')}" to "${path}". ` +
+          mkdirError.message = `Error while trying to symlink "${target}" to "${path}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
@@ -174,15 +174,17 @@ function forceSymlinkSync (
   try {
     if (symlinkType !== undefined) {
       // avoid extra try block for second and subsequent calls for better performance
-      symlinkSync(resolveSrc(target, path, symlinkType), path, symlinkType)
+      symlinkSync(resolveSrc!(target, path), path, symlinkType)
     } else {
       try {
         symlinkSync(resolveSrcOnTrueSymlink(target, path), path, 'dir')
         symlinkType = 'dir'
+        resolveSrc = resolveSrcOnTrueSymlink
       } catch (err) {
         if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
           symlinkSync(resolveSrcOnWinJunction(target, path), path, 'junction')
           symlinkType = 'junction'
+          resolveSrc = resolveSrcOnWinJunction
         } else {
           throw err
         }
@@ -196,7 +198,7 @@ function forceSymlinkSync (
         try {
           mkdirSync(pathLib.dirname(path), { recursive: true })
         } catch (mkdirError) {
-          mkdirError.message = `Error while trying to symlink "${resolveSrc(target, path, symlinkType ?? 'dir')}" to "${path}". ` +
+          mkdirError.message = `Error while trying to symlink "${target}" to "${path}". ` +
             `The error happened while trying to create the parent directory for the symlink target. ` +
             `Details: ${mkdirError}`
           throw mkdirError
