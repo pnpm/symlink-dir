@@ -34,9 +34,10 @@ function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean 
   return forceSymlink(target, path, opts)
 }
 
-function canSymlinkBeReused (target: string, path: string, linkString: string): boolean {
-  const normalizedTarget = resolveSrc(target, path, pathLib.isAbsolute(linkString) ? 'junction' : 'dir')
-  return pathLib.relative(normalizedTarget, linkString) === ''
+function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkString: string): boolean {
+  // path is going to be that of the symlink, so never be a (drive) root, therefore dirname(path) is different from path
+  const existingTarget = pathLib.isAbsolute(linkString) ? linkString : pathLib.join(pathLib.dirname(path), linkString)
+  return pathLib.relative(wantedTarget, existingTarget) === ''
 }
 
 /**
@@ -129,7 +130,7 @@ async function forceSymlink (
     }
   }
 
-  if (canSymlinkBeReused(target, path, linkString)) {
+  if (isExistingSymlinkUpToDate(target, path, linkString)) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
@@ -246,7 +247,7 @@ function forceSymlinkSync (
     }
   }
 
-  if (canSymlinkBeReused(target, path, linkString)) {
+  if (isExistingSymlinkUpToDate(target, path, linkString)) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
