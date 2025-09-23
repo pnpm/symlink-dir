@@ -50,7 +50,7 @@ if (IS_WINDOWS) {
       }
     }
   }
-  createSymlinkSync = async (target: string, path: string) => {
+  createSymlinkSync = (target: string, path: string) => {
     try {
       createTrueSymlinkSync(target, path)
       createSymlinkSync = createTrueSymlinkSync
