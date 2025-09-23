@@ -29,52 +29,57 @@ function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkStri
   return pathLib.relative(wantedTarget, existingTarget) === ''
 }
 
-let createSymlink = !IS_WINDOWS ? createTrueSymlink : async (target: string, path: string) => {
-  try {
-    await createTrueSymlink(target, path)
-    createSymlinkSync = createTrueSymlinkSync
-    createSymlink = createTrueSymlink
-  } catch (err) {
-    // Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
-    // lack permission to create them
-    if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
-      await createJunction(target, path)
-      createSymlinkSync = createJunctionSync
-      createSymlink = createJunction
-    } else {
-      throw err
+let createSymlinkAsync!: (target: string, path: string) => Promise<void>
+let createSymlinkSync!: (target: string, path: string) => void
+
+if (IS_WINDOWS) {
+  // Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
+  // lack permission to create them
+  createSymlinkAsync = async (target: string, path: string) => {
+    try {
+      await createTrueSymlinkAsync(target, path)
+      createSymlinkSync = createTrueSymlinkSync
+      createSymlinkAsync = createTrueSymlinkAsync
+    } catch (err) {
+      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+        await createJunctionAsync(target, path)
+        createSymlinkSync = createJunctionSync
+        createSymlinkAsync = createJunctionAsync
+      } else {
+        throw err
+      }
     }
   }
+  createSymlinkAsync = async (target: string, path: string) => {
+    try {
+      createTrueSymlinkSync(target, path)
+      createSymlinkSync = createTrueSymlinkSync
+      createSymlinkAsync = createTrueSymlinkAsync
+    } catch (err) {
+      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+        createJunctionSync(target, path)
+        createSymlinkSync = createJunctionSync
+        createSymlinkAsync = createJunctionAsync
+      } else {
+        throw err
+      }
+    }
+  }
+} else {
+  createSymlinkAsync = createTrueSymlinkAsync
+  createSymlinkSync = createTrueSymlinkSync
 }
 
-function createTrueSymlink (target: string, path: string) {
+function createTrueSymlinkAsync (target: string, path: string) {
   return fs.symlink(resolveSrcOnTrueSymlink(target, path), path, 'dir')
 }
-
-function createJunction (target: string, path: string) {
-  return fs.symlink(resolveSrcOnWinJunction(target), path, 'junction')
-}
-
-let createSymlinkSync = !IS_WINDOWS ? createTrueSymlinkSync : (target: string, path: string) => {
-  try {
-    createTrueSymlinkSync(target, path)
-    createSymlinkSync = createTrueSymlinkSync
-    createSymlink = createTrueSymlink
-  } catch (err) {
-    if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
-      createJunctionSync(target, path)
-      createSymlinkSync = createJunctionSync
-      createSymlink = createJunction
-    } else {
-      throw err
-    }
-  }
-}
-
 function createTrueSymlinkSync (target: string, path: string) {
   symlinkSync(resolveSrcOnTrueSymlink(target, path), path, 'dir')
 }
 
+function createJunctionAsync (target: string, path: string) {
+  return fs.symlink(resolveSrcOnWinJunction(target), path, 'junction')
+}
 function createJunctionSync (target: string, path: string) {
   symlinkSync(resolveSrcOnWinJunction(target), path, 'junction')
 }
@@ -93,7 +98,7 @@ async function forceSymlink (
 ): Promise<{ reused: boolean, warn?: string }> {
   let initialErr: Error
   try {
-    await createSymlink(target, path)
+    await createSymlinkAsync(target, path)
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
