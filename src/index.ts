@@ -6,16 +6,7 @@ import renameOverwrite = require('rename-overwrite')
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
-// Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
-// lack permission to create them
-let symlinkType: 'dir' | 'junction' | undefined
-let resolveSrc: undefined | typeof resolveSrcOnTrueSymlink
-if (!IS_WINDOWS) {
-  symlinkType = 'dir'
-  resolveSrc = resolveSrcOnTrueSymlink
-}
-
-function resolveSrcOnWinJunction (src: string, dest: string) {
+function resolveSrcOnWinJunction (src: string) {
   return `${src}\\`
 }
 
@@ -38,6 +29,56 @@ function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkStri
   return pathLib.relative(wantedTarget, existingTarget) === ''
 }
 
+let createSymlink = !IS_WINDOWS ? createTrueSymlink : async (target: string, path: string) => {
+  try {
+    await createTrueSymlink(target, path)
+    createSymlinkSync = createTrueSymlinkSync
+    createSymlink = createTrueSymlink
+  } catch (err) {
+    // Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
+    // lack permission to create them
+    if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+      await createJunction(target, path)
+      createSymlinkSync = createJunctionSync
+      createSymlink = createJunction
+    } else {
+      throw err
+    }
+  }
+}
+
+function createTrueSymlink (target: string, path: string) {
+  return fs.symlink(resolveSrcOnTrueSymlink(target, path), path, 'dir')
+}
+
+function createJunction (target: string, path: string) {
+  return fs.symlink(resolveSrcOnWinJunction(target), path, 'junction')
+}
+
+let createSymlinkSync = !IS_WINDOWS ? createTrueSymlinkSync : (target: string, path: string) => {
+  try {
+    createTrueSymlinkSync(target, path)
+    createSymlinkSync = createTrueSymlinkSync
+    createSymlink = createTrueSymlink
+  } catch (err) {
+    if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+      createJunctionSync(target, path)
+      createSymlinkSync = createJunctionSync
+      createSymlink = createJunction
+    } else {
+      throw err
+    }
+  }
+}
+
+function createTrueSymlinkSync (target: string, path: string) {
+  symlinkSync(resolveSrcOnTrueSymlink(target, path), path, 'dir')
+}
+
+function createJunctionSync (target: string, path: string) {
+  symlinkSync(resolveSrcOnWinJunction(target), path, 'junction')
+}
+
 /**
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
@@ -52,24 +93,7 @@ async function forceSymlink (
 ): Promise<{ reused: boolean, warn?: string }> {
   let initialErr: Error
   try {
-    if (symlinkType !== undefined) {
-      // avoid extra try block for second and subsequent calls for better performance
-      await fs.symlink(resolveSrc!(target, path), path, symlinkType)
-    } else {
-      try {
-        await fs.symlink(resolveSrcOnTrueSymlink(target, path), path, 'dir')
-        symlinkType = 'dir'
-        resolveSrc = resolveSrcOnTrueSymlink
-      } catch (err) {
-        if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
-          await fs.symlink(resolveSrcOnWinJunction(target, path), path, 'junction')
-          symlinkType = 'junction'
-          resolveSrc = resolveSrcOnWinJunction
-        } else {
-          throw err
-        }
-      }
-    }
+    await createSymlink(target, path)
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
@@ -172,24 +196,7 @@ function forceSymlinkSync (
 ): { reused: boolean, warn?: string } {
   let initialErr: Error
   try {
-    if (symlinkType !== undefined) {
-      // avoid extra try block for second and subsequent calls for better performance
-      symlinkSync(resolveSrc!(target, path), path, symlinkType)
-    } else {
-      try {
-        symlinkSync(resolveSrcOnTrueSymlink(target, path), path, 'dir')
-        symlinkType = 'dir'
-        resolveSrc = resolveSrcOnTrueSymlink
-      } catch (err) {
-        if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
-          symlinkSync(resolveSrcOnWinJunction(target, path), path, 'junction')
-          symlinkType = 'junction'
-          resolveSrc = resolveSrcOnWinJunction
-        } else {
-          throw err
-        }
-      }
-    }
+    createSymlinkSync(target, path)
     return { reused: false }
   } catch (err) {
     initialErr = err
