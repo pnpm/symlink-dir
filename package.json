@@ -20,6 +20,7 @@
   "scripts": {
     "pretest": "rimraf node_modules/src",
     "test": "ts-node test/sync.ts && ts-node test/async.ts",
+    "test:non-develop": "ts-node -r ./test/emulateWinNonDevelopMode.js test/sync.ts && ts-node -r ./test/emulateWinNonDevelopMode.js test/async.ts",
     "premd": "rimraf node_modules/src && npm run tsc",
     "tsc": "rimraf dist && tsc",
     "prepublishOnly": "npm run tsc"

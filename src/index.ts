@@ -6,17 +6,11 @@ import renameOverwrite = require('rename-overwrite')
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
-// Always use "junctions" on Windows. Even though support for "symbolic links" was added in Vista+, users by default
-// lack permission to create them
-const symlinkType = IS_WINDOWS ? 'junction' : 'dir'
-
-const resolveSrc = IS_WINDOWS ? resolveSrcOnWin: resolveSrcOnNonWin
-
-function resolveSrcOnWin (src: string, dest: string) {
+function resolveSrcOnWinJunction (src: string) {
   return `${src}\\`
 }
 
-function resolveSrcOnNonWin (src: string, dest: string) {
+function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
@@ -26,9 +20,68 @@ function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean 
 
   if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
-  target = resolveSrc(target, path)
-
   return forceSymlink(target, path, opts)
+}
+
+function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkString: string): boolean {
+  // path is going to be that of the symlink, so never be a (drive) root, therefore dirname(path) is different from path
+  const existingTarget = pathLib.isAbsolute(linkString) ? linkString : pathLib.join(pathLib.dirname(path), linkString)
+  return pathLib.relative(wantedTarget, existingTarget) === ''
+}
+
+let createSymlinkAsync!: (target: string, path: string) => Promise<void>
+let createSymlinkSync!: (target: string, path: string) => void
+
+if (IS_WINDOWS) {
+  // Falls back to "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default
+  // lack permission to create them
+  createSymlinkAsync = async (target: string, path: string) => {
+    try {
+      await createTrueSymlinkAsync(target, path)
+      createSymlinkSync = createTrueSymlinkSync
+      createSymlinkAsync = createTrueSymlinkAsync
+    } catch (err) {
+      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+        await createJunctionAsync(target, path)
+        createSymlinkSync = createJunctionSync
+        createSymlinkAsync = createJunctionAsync
+      } else {
+        throw err
+      }
+    }
+  }
+  createSymlinkSync = (target: string, path: string) => {
+    try {
+      createTrueSymlinkSync(target, path)
+      createSymlinkSync = createTrueSymlinkSync
+      createSymlinkAsync = createTrueSymlinkAsync
+    } catch (err) {
+      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+        createJunctionSync(target, path)
+        createSymlinkSync = createJunctionSync
+        createSymlinkAsync = createJunctionAsync
+      } else {
+        throw err
+      }
+    }
+  }
+} else {
+  createSymlinkAsync = createTrueSymlinkAsync
+  createSymlinkSync = createTrueSymlinkSync
+}
+
+function createTrueSymlinkAsync (target: string, path: string) {
+  return fs.symlink(resolveSrcOnTrueSymlink(target, path), path, 'dir')
+}
+function createTrueSymlinkSync (target: string, path: string) {
+  symlinkSync(resolveSrcOnTrueSymlink(target, path), path, 'dir')
+}
+
+function createJunctionAsync (target: string, path: string) {
+  return fs.symlink(resolveSrcOnWinJunction(target), path, 'junction')
+}
+function createJunctionSync (target: string, path: string) {
+  symlinkSync(resolveSrcOnWinJunction(target), path, 'junction')
 }
 
 /**
@@ -45,7 +98,7 @@ async function forceSymlink (
 ): Promise<{ reused: boolean, warn?: string }> {
   let initialErr: Error
   try {
-    await fs.symlink(target, path, symlinkType)
+    await createSymlinkAsync(target, path)
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
@@ -106,7 +159,7 @@ async function forceSymlink (
     }
   }
 
-  if (pathLib.relative(target, linkString) === '') {
+  if (isExistingSymlinkUpToDate(target, path, linkString)) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {
@@ -134,8 +187,6 @@ namespace symlinkDir {
 
     if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
-    target = resolveSrc(target, path)
-
     return forceSymlinkSync(target, path, opts)
   }
 }
@@ -150,7 +201,7 @@ function forceSymlinkSync (
 ): { reused: boolean, warn?: string } {
   let initialErr: Error
   try {
-    symlinkSync(target, path, symlinkType)
+    createSymlinkSync(target, path)
     return { reused: false }
   } catch (err) {
     initialErr = err
@@ -210,7 +261,7 @@ function forceSymlinkSync (
     }
   }
 
-  if (pathLib.relative(target, linkString) === '') {
+  if (isExistingSymlinkUpToDate(target, path, linkString)) {
     return { reused: true }
   }
   if (opts?.overwrite === false) {

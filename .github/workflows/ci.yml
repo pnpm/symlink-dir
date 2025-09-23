@@ -34,3 +34,6 @@ jobs:
       run: pnpm install
     - name: run tests
       run: pnpm test
+    - name: run tests (emulate Windows non-developer mode)
+      run: pnpm test:non-develop
+      if: matrix.platform == 'windows-latest'
