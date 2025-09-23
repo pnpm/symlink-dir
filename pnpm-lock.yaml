@@ -21,8 +21,8 @@ importers:
         specifier: ^22.15.3
         version: 22.15.3
       '@types/tape':
-        specifier: ^5.8.1
-        version: 5.8.1
+        specifier: 5.6.4
+        version: 5.6.4
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -93,8 +93,11 @@ packages:
   '@types/node@22.15.3':
     resolution: {integrity: sha512-lX7HFZeHf4QG/J7tBZqrCAXwz9J5RD56Y6MpP0eJkka8p+K0RY/yBTW7CYFJ4VGCclxqOLKmiGP5juQc6MKgcw==}
 
-  '@types/tape@5.8.1':
-    resolution: {integrity: sha512-vRjK+E1c+I4WRDSXcYfgepPjz2Knh+gulU3359LrR9H2KM8AyiMbNmX7W5aMlw7JFoXMpVOhq3bEIm78qakGbQ==}
+  '@types/tape@5.6.4':
+    resolution: {integrity: sha512-EmL4fJpZyByNCkupLLcJhneqcnT+rQUG5fWKNCsZyBK1x7nUuDTwwEerc4biEMZgvSK2+FXr775aLeXhKXK4Yw==}
+
+  '@types/through@0.0.33':
+    resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
 
   '@zkochan/rimraf@3.0.2':
     resolution: {integrity: sha512-GBf4ua7ogWTr7fATnzk/JLowZDBnBJMm8RkMaC/KcvxZ9gxbMWix0/jImd815LmqKyIHZ7h7lADRddGMdGBuCA==}
@@ -843,11 +846,14 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
-  '@types/tape@5.8.1':
+  '@types/tape@5.6.4':
     dependencies:
-      '@ljharb/through': 2.3.14
       '@types/node': 22.15.3
-      mock-property: 1.1.0
+      '@types/through': 0.0.33
+
+  '@types/through@0.0.33':
+    dependencies:
+      '@types/node': 22.15.3
 
   '@zkochan/rimraf@3.0.2': {}
 

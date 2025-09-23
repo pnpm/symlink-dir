@@ -41,7 +41,7 @@
   "homepage": "https://github.com/pnpm/symlink-dir#readme",
   "devDependencies": {
     "@types/node": "^22.15.3",
-    "@types/tape": "^5.8.1",
+    "@types/tape": "5.6.4",
     "rimraf": "^3.0.2",
     "tape": "^5.9.0",
     "tempy": "^1.0.1",
