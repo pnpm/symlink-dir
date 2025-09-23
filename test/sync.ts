@@ -141,3 +141,91 @@ test('reusing the existing symlink if it already points to the needed location',
 
   t.end()
 })
+
+if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
+  // simulate the situation where the user enabled or disabled Windows Developer Mode between the first and second symlink creation
+  // including the scenario where upgrading from a true-symlink-unsupported version to a supported one
+  // each test should be run serially to avoid race conditions where the value of symlinkBlockedInWindows is updated concurrently by multiple tests,
+  // potentially causing tests to fail or pass unexpectedly.
+
+  test('do not fail if correct target folder already exists (Developer Mode: off -> on)', async (t) => {
+      const temp = tempy.directory()
+      t.comment(`testing in ${temp}`)
+      process.chdir(temp)
+
+      await fs.mkdir('src')
+      symlink.sync('src', 'dest', { overwrite: false })
+
+      try {
+        // Developer Mode is turned on
+        globalThis.symlinkBlockedInWindows = false
+        t.equal((symlink.sync('src', 'dest', { overwrite: false })).reused, true)
+      } finally {
+        globalThis.symlinkBlockedInWindows = true
+      }
+      t.end()
+    })
+
+    test('do not fail if correct target folder already exists (Developer Mode: on -> off)', async (t) => {
+      const temp = tempy.directory()
+      t.comment(`testing in ${temp}`)
+      process.chdir(temp)
+
+      await fs.mkdir('src')
+      try {
+        globalThis.symlinkBlockedInWindows = false
+        symlink.sync('src', 'dest', { overwrite: false })
+      } finally {
+        // Developer Mode is turned off
+        globalThis.symlinkBlockedInWindows = true
+      }
+
+      t.equal((symlink.sync('src', 'dest', { overwrite: false })).reused, true)
+      t.end()
+    })
+
+    test('reusing the existing symlink if it already points to the needed location (Developer Mode: off -> on)', async (t) => {
+      const temp = tempy.directory()
+      t.comment(`testing in ${temp}`)
+      process.chdir(temp)
+
+      await writeJsonFile('src/file.json', { ok: true })
+
+      symlink.sync('src', 'dest/subdir')
+      try {
+        // Developer Mode is turned on
+        globalThis.symlinkBlockedInWindows = false
+        const { reused } = symlink.sync('src', 'dest/subdir')
+
+        t.equal(reused, true)
+      } finally {
+        globalThis.symlinkBlockedInWindows = true
+      }
+
+      t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+      t.end()
+    })
+
+    test('reusing the existing symlink if it already points to the needed location (Developer Mode: on -> off)', async (t) => {
+      const temp = tempy.directory()
+      t.comment(`testing in ${temp}`)
+      process.chdir(temp)
+
+      await writeJsonFile('src/file.json', { ok: true })
+
+      try {
+        globalThis.symlinkBlockedInWindows = false
+        symlink.sync('src', 'dest/subdir')
+      } finally {
+        // Developer Mode is turned off
+        globalThis.symlinkBlockedInWindows = true
+      }
+      const { reused } = symlink.sync('src', 'dest/subdir')
+
+      t.equal(reused, true)
+      t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+      t.end()
+    })
+  }
