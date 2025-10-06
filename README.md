@@ -58,6 +58,7 @@ Creates the link called `path` pointing to `target`.
 Options:
 
 * `overwrite` - *boolean* - is `true` by default. When `false`, existing files at dest are not overwritten.
+* `symlinkOnly` - *boolean* - is `false` by default. When `true`, forces creation of real symbolic links and never falls back to junctions on Windows. If symbolic links cannot be created (e.g., insufficient permissions), an error will be thrown instead of falling back to junctions.
 
 Result:
 
