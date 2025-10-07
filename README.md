@@ -7,6 +7,7 @@
 <!--/@-->
 
 * Uses "junctions" on Windows if "symbolic links" is disallowed. Even though support for "symbolic links" was added in Vista+, users by default lack permission to create them
+  * **⚠️ Windows Junction Warning**: On Windows, this library will create a junction even if the target is not a directory. However, Windows junctions can only point to directories, so creating a junction to a file will result in a broken, non-functioning junction. This library does not check if the target exists or is a directory. If there's a chance that the target is a file, either check it yourself before calling `symlink-dir` or set `noJunction` to `true` to prevent creating a broken junction.
 * If you prefer symbolic links in Windows, [turn on the Developer Mode](https://learn.microsoft.com/windows/apps/get-started/enable-your-device-for-development#activate-developer-mode)
 * Any file or directory, that has the destination name, is renamed before creating the link
 
