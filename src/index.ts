@@ -6,7 +6,7 @@ import renameOverwrite = require('rename-overwrite')
 
 interface SymlinkDirOptions {
   overwrite?: boolean
-  symlinkOnly?: boolean
+  noJunction?: boolean
 }
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
@@ -104,7 +104,7 @@ async function forceSymlink (
 ): Promise<{ reused: boolean, warn?: string }> {
   let initialErr: Error
   try {
-    if (opts?.symlinkOnly === true) {
+    if (opts?.noJunction === true) {
       await createTrueSymlinkAsync(target, path)
     } else {
       await createSymlinkAsync(target, path)
@@ -208,7 +208,7 @@ function forceSymlinkSync (
 ): { reused: boolean, warn?: string } {
   let initialErr: Error
   try {
-    if (opts?.symlinkOnly === true) {
+    if (opts?.noJunction === true) {
       createTrueSymlinkSync(target, path)
     } else {
       createSymlinkSync(target, path)

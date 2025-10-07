@@ -143,15 +143,15 @@ test('reusing the existing symlink if it already points to the needed location',
 })
 
 if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
-  test('force real symlink creation with symlinkOnly: true (async)', async (t) => {
+  test('force real symlink creation with noJunction: true (async)', async (t) => {
     const temp = tempy.directory()
     t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
 
-    await symlink('src', 'dest/subdir', { symlinkOnly: true })
-    const { reused } = await symlink('src', 'dest/subdir', { symlinkOnly: true })
+    await symlink('src', 'dest/subdir', { noJunction: true })
+    const { reused } = await symlink('src', 'dest/subdir', { noJunction: true })
 
     t.equal(reused, true)
     t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
@@ -161,7 +161,7 @@ if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
 }
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
-  test('symlinkOnly: true should throw EPERM (no junction fallback) when symlinks are blocked (async)', async (t) => {
+  test('noJunction: true should throw EPERM (no junction fallback) when symlinks are blocked (async)', async (t) => {
     const temp = tempy.directory()
     t.comment(`testing in ${temp}`)
     process.chdir(temp)
@@ -170,7 +170,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 
     let err!: Error
     try {
-      await symlink('src', 'dest', { symlinkOnly: true })
+      await symlink('src', 'dest', { noJunction: true })
     } catch (_err) {
       err = _err
     }
