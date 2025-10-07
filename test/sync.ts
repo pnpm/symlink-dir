@@ -142,6 +142,54 @@ test('reusing the existing symlink if it already points to the needed location',
   t.end()
 })
 
+if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
+  test('force real symlink creation with noJunction: true (sync)', async (t) => {
+    const temp = tempy.directory()
+    t.comment(`testing in ${temp}`)
+    process.chdir(temp)
+
+    await writeJsonFile('src/file.json', { ok: true })
+
+    symlink.sync('src', 'dest/subdir', { noJunction: true })
+    const { reused } = symlink.sync('src', 'dest/subdir', { noJunction: true })
+
+    t.equal(reused, true)
+    t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+    t.end()
+  })
+}
+
+if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
+  test('noJunction: true should throw EPERM (no junction fallback) when symlinks are blocked (sync)', async (t) => {
+    const temp = tempy.directory()
+    t.comment(`testing in ${temp}`)
+    process.chdir(temp)
+
+    await fs.mkdir('src')
+
+    let err!: Error
+    try {
+      symlink.sync('src', 'dest', { noJunction: true })
+    } catch (_err) {
+      err = _err
+    }
+
+    t.ok(err, 'error is thrown')
+    t.equals((err as any)['code'], 'EPERM', 'EPERM thrown without junction fallback')
+
+    let statErr!: Error
+    try {
+      await fs.lstat('dest')
+    } catch (_err) {
+      statErr = _err
+    }
+    t.ok(statErr && (statErr as any)['code'] === 'ENOENT', 'dest not created')
+
+    t.end()
+  })
+}
+
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   // simulate the situation where the user enabled or disabled Windows Developer Mode between the first and second symlink creation
   // including the scenario where upgrading from a true-symlink-unsupported version to a supported one

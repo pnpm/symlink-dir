@@ -4,6 +4,11 @@ import util = require('util')
 import pathLib = require('path')
 import renameOverwrite = require('rename-overwrite')
 
+interface SymlinkDirOptions {
+  overwrite?: boolean
+  noJunction?: boolean
+}
+
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
 function resolveSrcOnWinJunction (src: string) {
@@ -14,7 +19,7 @@ function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-function symlinkDir (target: string, path: string, opts?: { overwrite?: boolean }): Promise<{ reused: boolean, warn?: string }> {
+function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
   target = betterPathResolve(target)
 
@@ -88,17 +93,22 @@ function createJunctionSync (target: string, path: string) {
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
+interface ForceSymlinkOptions extends SymlinkDirOptions {
+  renameTried?: boolean
+}
+
 async function forceSymlink (
   target: string,
   path: string,
-  opts?: {
-    overwrite?: boolean
-    renameTried?: boolean
-  }
+  opts?: ForceSymlinkOptions
 ): Promise<{ reused: boolean, warn?: string }> {
   let initialErr: Error
   try {
-    await createSymlinkAsync(target, path)
+    if (opts?.noJunction === true) {
+      await createTrueSymlinkAsync(target, path)
+    } else {
+      await createSymlinkAsync(target, path)
+    }
     return { reused: false }
   } catch (err) {
     switch ((<NodeJS.ErrnoException>err).code) {
@@ -181,7 +191,7 @@ symlinkDir['default'] = symlinkDir
 export = symlinkDir
 
 namespace symlinkDir {
-  export function sync (target: string, path: string, opts?: { overwrite?: boolean }): { reused: boolean, warn?: string } {
+  export function sync (target: string, path: string, opts?: SymlinkDirOptions): { reused: boolean, warn?: string } {
     path = betterPathResolve(path)
     target = betterPathResolve(target)
 
@@ -194,14 +204,15 @@ namespace symlinkDir {
 function forceSymlinkSync (
   target: string,
   path: string,
-  opts?: {
-    overwrite?: boolean
-    renameTried?: boolean
-  }
+  opts?: ForceSymlinkOptions
 ): { reused: boolean, warn?: string } {
   let initialErr: Error
   try {
-    createSymlinkSync(target, path)
+    if (opts?.noJunction === true) {
+      createTrueSymlinkSync(target, path)
+    } else {
+      createSymlinkSync(target, path)
+    }
     return { reused: false }
   } catch (err) {
     initialErr = err
