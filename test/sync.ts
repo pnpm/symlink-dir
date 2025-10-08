@@ -278,37 +278,39 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
     })
   }
 
-test('create relative symlink when relative target is passed (sync)', async (t) => {
-  const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
-  process.chdir(temp)
+if (process.platform !== 'win32') {
+  test('create relative symlink when relative target is passed (sync)', async (t) => {
+    const temp = tempy.directory()
+    t.comment(`testing in ${temp}`)
+    process.chdir(temp)
 
-  await fs.mkdir('src')
-  await writeJsonFile('src/file.json', { ok: true })
+    await fs.mkdir('src')
+    await writeJsonFile('src/file.json', { ok: true })
 
-  symlink.sync('src', 'dest')
+    symlink.sync('src', 'dest')
 
-  const linkString = await fs.readlink('dest')
-  t.equal(linkString, 'src', 'symlink target should be relative path "src"')
-  t.deepEqual(await import(path.resolve('dest/file.json')), { ok: true })
+    const linkString = await fs.readlink('dest')
+    t.equal(linkString, 'src', 'symlink target should be relative path "src"')
+    t.deepEqual(await import(path.resolve('dest/file.json')), { ok: true })
 
-  t.end()
-})
+    t.end()
+  })
 
-test('create absolute symlink when absolute target is passed (sync)', async (t) => {
-  const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
-  process.chdir(temp)
+  test('create absolute symlink when absolute target is passed (sync)', async (t) => {
+    const temp = tempy.directory()
+    t.comment(`testing in ${temp}`)
+    process.chdir(temp)
 
-  await fs.mkdir('src')
-  await writeJsonFile('src/file.json', { ok: true })
+    await fs.mkdir('src')
+    await writeJsonFile('src/file.json', { ok: true })
 
-  const absoluteTarget = path.resolve('src')
-  symlink.sync(absoluteTarget, 'dest')
+    const absoluteTarget = path.resolve('src')
+    symlink.sync(absoluteTarget, 'dest')
 
-  const linkString = await fs.readlink('dest')
-  t.equal(linkString, absoluteTarget, 'symlink target should be absolute path')
-  t.deepEqual(await import(path.resolve('dest/file.json')), { ok: true })
+    const linkString = await fs.readlink('dest')
+    t.equal(linkString, absoluteTarget, 'symlink target should be absolute path')
+    t.deepEqual(await import(path.resolve('dest/file.json')), { ok: true })
 
-  t.end()
-})
+    t.end()
+  })
+}
