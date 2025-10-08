@@ -101,7 +101,7 @@ test('create parent directory of symlink', async (t) => {
 
   await writeJsonFile('src/file.json', { ok: true })
 
-  const { warn } = await symlink('src', 'dest/subdir')
+  const { warn } = await symlink('../src', 'dest/subdir')
 
   t.notOk(warn)
   t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
@@ -117,8 +117,8 @@ test('concurrently creating the same symlink twice', async (t) => {
   await writeJsonFile('src/file.json', { ok: true })
 
   await Promise.all([
-    symlink('src', 'dest/subdir'),
-    symlink('src', 'dest/subdir'),
+    symlink('../src', 'dest/subdir'),
+    symlink('../src', 'dest/subdir'),
   ])
 
   t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
@@ -133,8 +133,8 @@ test('reusing the existing symlink if it already points to the needed location',
 
   await writeJsonFile('src/file.json', { ok: true })
 
-  await symlink('src', 'dest/subdir')
-  const { reused } = await symlink('src', 'dest/subdir')
+  await symlink('../src', 'dest/subdir')
+  const { reused } = await symlink('../src', 'dest/subdir')
 
   t.equal(reused, true)
   t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
@@ -150,8 +150,8 @@ if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
 
     await writeJsonFile('src/file.json', { ok: true })
 
-    await symlink('src', 'dest/subdir', { noJunction: true })
-    const { reused } = await symlink('src', 'dest/subdir', { noJunction: true })
+    await symlink('../src', 'dest/subdir', { noJunction: true })
+    const { reused } = await symlink('../src', 'dest/subdir', { noJunction: true })
 
     t.equal(reused, true)
     t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
@@ -239,11 +239,11 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 
     await writeJsonFile('src/file.json', { ok: true })
 
-    await symlink('src', 'dest/subdir')
+    await symlink('../src', 'dest/subdir')
     try {
       // Developer Mode is turned on
       globalThis.symlinkBlockedInWindows = false
-      const { reused } = await symlink('src', 'dest/subdir')
+      const { reused } = await symlink('../src', 'dest/subdir')
 
       t.equal(reused, true)
     } finally {
@@ -264,15 +264,52 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 
     try {
       globalThis.symlinkBlockedInWindows = false
-      await symlink('src', 'dest/subdir')
+      await symlink('../src', 'dest/subdir')
     } finally {
       // Developer Mode is turned off
       globalThis.symlinkBlockedInWindows = true
     }
-    const { reused } = await symlink('src', 'dest/subdir')
+    const { reused } = await symlink('../src', 'dest/subdir')
 
     t.equal(reused, true)
     t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
+
+    t.end()
+  })
+}
+
+if (process.platform !== 'win32') {
+  test('create relative symlink when relative target is passed', async (t) => {
+    const temp = tempy.directory()
+    t.comment(`testing in ${temp}`)
+    process.chdir(temp)
+
+    await fs.mkdir('src')
+    await writeJsonFile('src/file.json', { ok: true })
+
+    await symlink('src', 'dest')
+
+    const linkString = await fs.readlink('dest')
+    t.equal(linkString, 'src', 'symlink target should be relative path "src"')
+    t.deepEqual(await import(path.resolve('dest/file.json')), { ok: true })
+
+    t.end()
+  })
+
+  test('create absolute symlink when absolute target is passed', async (t) => {
+    const temp = tempy.directory()
+    t.comment(`testing in ${temp}`)
+    process.chdir(temp)
+
+    await fs.mkdir('src')
+    await writeJsonFile('src/file.json', { ok: true })
+
+    const absoluteTarget = path.resolve('src')
+    await symlink(absoluteTarget, 'dest')
+
+    const linkString = await fs.readlink('dest')
+    t.equal(linkString, absoluteTarget, 'symlink target should be absolute path')
+    t.deepEqual(await import(path.resolve('dest/file.json')), { ok: true })
 
     t.end()
   })
