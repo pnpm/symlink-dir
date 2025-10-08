@@ -12,7 +12,7 @@ interface SymlinkDirOptions {
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
 function resolveSrcOnWinJunction (target: string, path: string) {
-  return `${pathLib.isAbsolute(target) ? target : pathLib.join(path, target)}\\`
+  return `${pathLib.isAbsolute(target) ? target : pathLib.join(pathLib.dirname(path), target)}\\`
 }
 
 function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
