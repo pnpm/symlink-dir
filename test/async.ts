@@ -239,11 +239,11 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 
     await writeJsonFile('src/file.json', { ok: true })
 
-    await symlink('src', 'dest/subdir')
+    await symlink('../src', 'dest/subdir')
     try {
       // Developer Mode is turned on
       globalThis.symlinkBlockedInWindows = false
-      const { reused } = await symlink('src', 'dest/subdir')
+      const { reused } = await symlink('../src', 'dest/subdir')
 
       t.equal(reused, true)
     } finally {
@@ -264,12 +264,12 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 
     try {
       globalThis.symlinkBlockedInWindows = false
-      await symlink('src', 'dest/subdir')
+      await symlink('../src', 'dest/subdir')
     } finally {
       // Developer Mode is turned off
       globalThis.symlinkBlockedInWindows = true
     }
-    const { reused } = await symlink('src', 'dest/subdir')
+    const { reused } = await symlink('../src', 'dest/subdir')
 
     t.equal(reused, true)
     t.deepEqual(await import(path.resolve('dest/subdir/file.json')), { ok: true })
