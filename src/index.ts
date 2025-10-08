@@ -11,27 +11,24 @@ interface SymlinkDirOptions {
 
 const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
 
-function resolveSrcOnWinJunction (src: string) {
-  return `${src}\\`
-}
-
-function resolveSrcOnTrueSymlink (src: string, dest: string) {
-  return pathLib.relative(pathLib.dirname(dest), src)
+function resolveSrcOnWinJunction (target: string, path: string) {
+  return `${pathLib.isAbsolute(target) ? target : pathLib.join(path, target)}\\`
 }
 
 function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
-  target = betterPathResolve(target)
 
-  if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
+  if (betterPathResolve(target) === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
   return forceSymlink(target, path, opts)
 }
 
 function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkString: string): boolean {
+  if (wantedTarget === linkString) return true
   // path is going to be that of the symlink, so never be a (drive) root, therefore dirname(path) is different from path
   const existingTarget = pathLib.isAbsolute(linkString) ? linkString : pathLib.join(pathLib.dirname(path), linkString)
-  return pathLib.relative(wantedTarget, existingTarget) === ''
+  const wantedTargetAbsolute = pathLib.isAbsolute(wantedTarget) ? wantedTarget : pathLib.join(pathLib.dirname(path), wantedTarget)
+  return pathLib.relative(wantedTargetAbsolute, existingTarget) === ''
 }
 
 let createSymlinkAsync!: (target: string, path: string) => Promise<void>
@@ -76,17 +73,17 @@ if (IS_WINDOWS) {
 }
 
 function createTrueSymlinkAsync (target: string, path: string) {
-  return fs.symlink(resolveSrcOnTrueSymlink(target, path), path, 'dir')
+  return fs.symlink(target, path, 'dir')
 }
 function createTrueSymlinkSync (target: string, path: string) {
-  symlinkSync(resolveSrcOnTrueSymlink(target, path), path, 'dir')
+  symlinkSync(target, path, 'dir')
 }
 
 function createJunctionAsync (target: string, path: string) {
-  return fs.symlink(resolveSrcOnWinJunction(target), path, 'junction')
+  return fs.symlink(resolveSrcOnWinJunction(target, path), path, 'junction')
 }
 function createJunctionSync (target: string, path: string) {
-  symlinkSync(resolveSrcOnWinJunction(target), path, 'junction')
+  symlinkSync(resolveSrcOnWinJunction(target, path), path, 'junction')
 }
 
 /**
@@ -193,9 +190,8 @@ export = symlinkDir
 namespace symlinkDir {
   export function sync (target: string, path: string, opts?: SymlinkDirOptions): { reused: boolean, warn?: string } {
     path = betterPathResolve(path)
-    target = betterPathResolve(target)
 
-    if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
+    if (betterPathResolve(target) === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
     return forceSymlinkSync(target, path, opts)
   }
