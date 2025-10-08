@@ -73,10 +73,10 @@ if (IS_WINDOWS) {
 }
 
 function createTrueSymlinkAsync (target: string, path: string) {
-  return fs.symlink(target, path, 'dir')
+  return fs.symlink(target, path)
 }
 function createTrueSymlinkSync (target: string, path: string) {
-  symlinkSync(target, path, 'dir')
+  symlinkSync(target, path)
 }
 
 function createJunctionAsync (target: string, path: string) {
