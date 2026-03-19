@@ -1,8 +1,8 @@
-import betterPathResolve from 'better-path-resolve'
+import { betterPathResolve } from 'better-path-resolve'
 import { promises as fs, symlinkSync, mkdirSync, readlinkSync, unlinkSync } from 'fs'
 import { types } from 'util'
 import pathLib from 'path'
-import renameOverwrite from 'rename-overwrite'
+import { renameOverwrite, renameOverwriteSync } from 'rename-overwrite'
 
 interface SymlinkDirOptions {
   overwrite?: boolean
@@ -249,7 +249,7 @@ function forceSymlinkSync (
     } else {
       const ignore = `.ignored_${pathLib.basename(path)}`
       try {
-        renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
+        renameOverwriteSync(path, pathLib.join(parentDir, ignore))
       } catch (error) {
         if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
           throw initialErr

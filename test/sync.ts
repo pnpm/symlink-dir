@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs'
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import tempy from 'tempy'
-import writeJsonFile from 'write-json-file'
+import { temporaryDirectory } from 'tempy'
+import { writeJsonFile } from 'write-json-file'
 import { symlinkDir, symlinkDirSync } from '../src/index.ts'
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
@@ -14,7 +14,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 }
 
 it('rename target folder if it exists', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await fs.mkdir('src')
@@ -26,7 +26,7 @@ it('rename target folder if it exists', async () => {
 })
 
 it('do not rename target folder if overwrite is set to false', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await fs.mkdir('src')
@@ -42,7 +42,7 @@ it('do not rename target folder if overwrite is set to false', async () => {
 })
 
 it('do not fail if correct target folder already exists', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await fs.mkdir('src')
@@ -52,7 +52,7 @@ it('do not fail if correct target folder already exists', async () => {
 })
 
 it('rename target file if it exists', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await fs.writeFile('dest', '', 'utf8')
@@ -64,7 +64,7 @@ it('rename target file if it exists', async () => {
 })
 
 it('throw error when symlink path equals the target path', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   assert.throws(
@@ -77,7 +77,7 @@ it('throw error when symlink path equals the target path', async () => {
 })
 
 it('create parent directory of symlink', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await writeJsonFile('src/file.json', { ok: true })
@@ -89,7 +89,7 @@ it('create parent directory of symlink', async () => {
 })
 
 it('concurrently creating the same symlink twice', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await writeJsonFile('src/file.json', { ok: true })
@@ -103,7 +103,7 @@ it('concurrently creating the same symlink twice', async () => {
 })
 
 it('reusing the existing symlink if it already points to the needed location', async () => {
-  const temp = tempy.directory()
+  const temp = temporaryDirectory()
   process.chdir(temp)
 
   await writeJsonFile('src/file.json', { ok: true })
@@ -117,7 +117,7 @@ it('reusing the existing symlink if it already points to the needed location', a
 
 if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
   it('force real symlink creation with noJunction: true (sync)', async () => {
-    const temp = tempy.directory()
+    const temp = temporaryDirectory()
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
@@ -132,7 +132,7 @@ if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   it('noJunction: true should throw EPERM (no junction fallback) when symlinks are blocked (sync)', async () => {
-    const temp = tempy.directory()
+    const temp = temporaryDirectory()
     process.chdir(temp)
 
     await fs.mkdir('src')
@@ -157,7 +157,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   it('do not fail if correct target folder already exists (Developer Mode: off -> on)', async () => {
-    const temp = tempy.directory()
+    const temp = temporaryDirectory()
     process.chdir(temp)
 
     await fs.mkdir('src')
@@ -172,7 +172,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   })
 
   it('do not fail if correct target folder already exists (Developer Mode: on -> off)', async () => {
-    const temp = tempy.directory()
+    const temp = temporaryDirectory()
     process.chdir(temp)
 
     await fs.mkdir('src')
@@ -187,7 +187,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   })
 
   it('reusing the existing symlink if it already points to the needed location (Developer Mode: off -> on)', async () => {
-    const temp = tempy.directory()
+    const temp = temporaryDirectory()
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
@@ -205,7 +205,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   })
 
   it('reusing the existing symlink if it already points to the needed location (Developer Mode: on -> off)', async () => {
-    const temp = tempy.directory()
+    const temp = temporaryDirectory()
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
