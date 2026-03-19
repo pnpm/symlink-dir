@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
-import test from 'tape'
+import { describe, it } from 'node:test'
+import assert from 'node:assert'
 import tempy from 'tempy'
 import writeJsonFile from 'write-json-file'
 import { symlinkDir } from '../src/index.js'
@@ -13,9 +14,8 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   }
 }
 
-test('rename target folder if it exists', async (t) => {
+it('rename target folder if it exists', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await fs.mkdir('src')
@@ -23,45 +23,37 @@ test('rename target folder if it exists', async (t) => {
 
   const { warn } = await symlinkDir('src', 'dest')
 
-  t.ok(warn && warn.indexOf('Symlink wanted name was occupied by directory or file') === 0, 'dest folder ignored')
-
-  t.end()
+  assert.ok(warn && warn.indexOf('Symlink wanted name was occupied by directory or file') === 0)
 })
 
-test('do not rename target folder if overwrite is set to false', async (t) => {
+it('do not rename target folder if overwrite is set to false', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await fs.mkdir('src')
   await fs.mkdir('dest')
 
-  let err!: Error
-  try {
-    await symlinkDir('src', 'dest', { overwrite: false })
-  } catch (_err) {
-    err = _err
-  }
-
-  t.equals(err['code'], 'EEXIST', 'dest folder not ignored')
-  t.end()
+  await assert.rejects(
+    () => symlinkDir('src', 'dest', { overwrite: false }),
+    (err: NodeJS.ErrnoException) => {
+      assert.strictEqual(err.code, 'EEXIST')
+      return true
+    }
+  )
 })
 
-test('do not fail if correct target folder already exists', async (t) => {
+it('do not fail if correct target folder already exists', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await fs.mkdir('src')
   await symlinkDir('src', 'dest', { overwrite: false })
 
-  t.equal((await symlinkDir('src', 'dest', { overwrite: false })).reused, true)
-  t.end()
+  assert.strictEqual((await symlinkDir('src', 'dest', { overwrite: false })).reused, true)
 })
 
-test('rename target file if it exists', async (t) => {
+it('rename target file if it exists', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await fs.writeFile('dest', '', 'utf8')
@@ -69,48 +61,36 @@ test('rename target file if it exists', async (t) => {
 
   const { warn } = await symlinkDir('src', 'dest')
 
-  t.ok(warn && warn.indexOf('Symlink wanted name was occupied by directory or file') === 0, 'dest folder ignored')
-
-  t.end()
+  assert.ok(warn && warn.indexOf('Symlink wanted name was occupied by directory or file') === 0)
 })
 
-test('throw error when symlink path equals the target path', async (t) => {
+it('throw error when symlink path equals the target path', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
-  let err!: Error
-
-  try {
-    await symlinkDir('src', 'src')
-  } catch (_err) {
-    err = _err
-  }
-
-  t.ok(err)
-  t.ok(err.message.startsWith('Symlink path is the same as the target path ('))
-
-  t.end()
+  assert.throws(
+    () => symlinkDir('src', 'src'),
+    (err: Error) => {
+      assert.ok(err.message.startsWith('Symlink path is the same as the target path ('))
+      return true
+    }
+  )
 })
 
-test('create parent directory of symlink', async (t) => {
+it('create parent directory of symlink', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await writeJsonFile('src/file.json', { ok: true })
 
   const { warn } = await symlinkDir('src', 'dest/subdir')
 
-  t.notOk(warn)
-  t.deepEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
-
-  t.end()
+  assert.ok(!warn)
+  assert.deepStrictEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
 })
 
-test('concurrently creating the same symlink twice', async (t) => {
+it('concurrently creating the same symlink twice', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await writeJsonFile('src/file.json', { ok: true })
@@ -120,14 +100,11 @@ test('concurrently creating the same symlink twice', async (t) => {
     symlinkDir('src', 'dest/subdir'),
   ])
 
-  t.deepEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
-
-  t.end()
+  assert.deepStrictEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
 })
 
-test('reusing the existing symlink if it already points to the needed location', async (t) => {
+it('reusing the existing symlink if it already points to the needed location', async () => {
   const temp = tempy.directory()
-  t.comment(`testing in ${temp}`)
   process.chdir(temp)
 
   await writeJsonFile('src/file.json', { ok: true })
@@ -135,16 +112,13 @@ test('reusing the existing symlink if it already points to the needed location',
   await symlinkDir('src', 'dest/subdir')
   const { reused } = await symlinkDir('src', 'dest/subdir')
 
-  t.equal(reused, true)
-  t.deepEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
-
-  t.end()
+  assert.strictEqual(reused, true)
+  assert.deepStrictEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
 })
 
 if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
-  test('force real symlink creation with noJunction: true (async)', async (t) => {
+  it('force real symlink creation with noJunction: true (async)', async () => {
     const temp = tempy.directory()
-    t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
@@ -152,70 +126,54 @@ if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
     await symlinkDir('src', 'dest/subdir', { noJunction: true })
     const { reused } = await symlinkDir('src', 'dest/subdir', { noJunction: true })
 
-    t.equal(reused, true)
-    t.deepEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
-
-    t.end()
+    assert.strictEqual(reused, true)
+    assert.deepStrictEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
   })
 }
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
-  test('noJunction: true should throw EPERM (no junction fallback) when symlinks are blocked (async)', async (t) => {
+  it('noJunction: true should throw EPERM (no junction fallback) when symlinks are blocked (async)', async () => {
     const temp = tempy.directory()
-    t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await fs.mkdir('src')
 
-    let err!: Error
-    try {
-      await symlinkDir('src', 'dest', { noJunction: true })
-    } catch (_err) {
-      err = _err
-    }
+    await assert.rejects(
+      () => symlinkDir('src', 'dest', { noJunction: true }),
+      (err: NodeJS.ErrnoException) => {
+        assert.strictEqual(err.code, 'EPERM')
+        return true
+      }
+    )
 
-    t.ok(err, 'error is thrown')
-    t.equals((err as any)['code'], 'EPERM', 'EPERM thrown without junction fallback')
-
-    let statErr!: Error
-    try {
-      await fs.lstat('dest')
-    } catch (_err) {
-      statErr = _err
-    }
-    t.ok(statErr && (statErr as any)['code'] === 'ENOENT', 'dest not created')
-
-    t.end()
+    await assert.rejects(
+      () => fs.lstat('dest'),
+      (err: NodeJS.ErrnoException) => {
+        assert.strictEqual(err.code, 'ENOENT')
+        return true
+      }
+    )
   })
 }
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
-  // simulate the situation where the user enabled or disabled Windows Developer Mode between the first and second symlink creation
-  // including the scenario where upgrading from a true-symlink-unsupported version to a supported one
-  // each test should be run serially to avoid race conditions where the value of symlinkBlockedInWindows is updated concurrently by multiple tests,
-  // potentially causing tests to fail or pass unexpectedly.
-
-  test('do not fail if correct target folder already exists (Developer Mode: off -> on)', async (t) => {
+  it('do not fail if correct target folder already exists (Developer Mode: off -> on)', async () => {
     const temp = tempy.directory()
-    t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await fs.mkdir('src')
     await symlinkDir('src', 'dest', { overwrite: false })
 
     try {
-      // Developer Mode is turned on
       globalThis.symlinkBlockedInWindows = false
-      t.equal((await symlinkDir('src', 'dest', { overwrite: false })).reused, true)
+      assert.strictEqual((await symlinkDir('src', 'dest', { overwrite: false })).reused, true)
     } finally {
       globalThis.symlinkBlockedInWindows = true
     }
-    t.end()
   })
 
-  test('do not fail if correct target folder already exists (Developer Mode: on -> off)', async (t) => {
+  it('do not fail if correct target folder already exists (Developer Mode: on -> off)', async () => {
     const temp = tempy.directory()
-    t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await fs.mkdir('src')
@@ -223,40 +181,32 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
       globalThis.symlinkBlockedInWindows = false
       await symlinkDir('src', 'dest', { overwrite: false })
     } finally {
-      // Developer Mode is turned off
       globalThis.symlinkBlockedInWindows = true
     }
 
-    t.equal((await symlinkDir('src', 'dest', { overwrite: false })).reused, true)
-    t.end()
+    assert.strictEqual((await symlinkDir('src', 'dest', { overwrite: false })).reused, true)
   })
 
-  test('reusing the existing symlink if it already points to the needed location (Developer Mode: off -> on)', async (t) => {
+  it('reusing the existing symlink if it already points to the needed location (Developer Mode: off -> on)', async () => {
     const temp = tempy.directory()
-    t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
 
     await symlinkDir('src', 'dest/subdir')
     try {
-      // Developer Mode is turned on
       globalThis.symlinkBlockedInWindows = false
       const { reused } = await symlinkDir('src', 'dest/subdir')
-
-      t.equal(reused, true)
+      assert.strictEqual(reused, true)
     } finally {
       globalThis.symlinkBlockedInWindows = true
     }
 
-    t.deepEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
-
-    t.end()
+    assert.deepStrictEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
   })
 
-  test('reusing the existing symlink if it already points to the needed location (Developer Mode: on -> off)', async (t) => {
+  it('reusing the existing symlink if it already points to the needed location (Developer Mode: on -> off)', async () => {
     const temp = tempy.directory()
-    t.comment(`testing in ${temp}`)
     process.chdir(temp)
 
     await writeJsonFile('src/file.json', { ok: true })
@@ -265,14 +215,11 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
       globalThis.symlinkBlockedInWindows = false
       await symlinkDir('src', 'dest/subdir')
     } finally {
-      // Developer Mode is turned off
       globalThis.symlinkBlockedInWindows = true
     }
     const { reused } = await symlinkDir('src', 'dest/subdir')
 
-    t.equal(reused, true)
-    t.deepEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
-
-    t.end()
+    assert.strictEqual(reused, true)
+    assert.deepStrictEqual((await import(path.resolve('dest/subdir/file.json'))).default, { ok: true })
   })
 }

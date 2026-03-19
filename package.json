@@ -25,8 +25,8 @@
   ],
   "scripts": {
     "pretest": "rimraf node_modules/src",
-    "test": "tsx test/sync.ts && tsx test/async.ts",
-    "test:non-develop": "tsx -r ./test/emulateWinNonDevelopMode.cjs test/sync.ts && tsx -r ./test/emulateWinNonDevelopMode.cjs test/async.ts",
+    "test": "node --import tsx --test test/sync.ts test/async.ts",
+    "test:non-develop": "node --import tsx -r ./test/emulateWinNonDevelopMode.cjs --test test/sync.ts test/async.ts",
     "premd": "rimraf node_modules/src && npm run tsc",
     "tsc": "rimraf dist && tsc",
     "prepublishOnly": "npm run tsc"
@@ -47,9 +47,7 @@
   "homepage": "https://github.com/pnpm/symlink-dir#readme",
   "devDependencies": {
     "@types/node": "^22.15.3",
-    "@types/tape": "5.6.4",
     "rimraf": "^3.0.2",
-    "tape": "^5.9.0",
     "tempy": "^1.0.1",
     "tsx": "^4.19.0",
     "typescript": "^5.8.3",
