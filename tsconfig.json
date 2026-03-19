@@ -12,7 +12,6 @@
     "moduleResolution": "node16"
   },
   "files": [
-    "src/cli.ts",
     "src/index.ts"
   ]
 }

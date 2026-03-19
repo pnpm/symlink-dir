@@ -3,7 +3,7 @@ import path from 'path'
 import test from 'tape'
 import tempy from 'tempy'
 import writeJsonFile from 'write-json-file'
-import symlinkDir from '../src/index.js'
+import { symlinkDir } from '../src/index.js'
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   console.log('Emulating Windows non-developer mode')

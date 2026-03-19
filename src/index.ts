@@ -19,7 +19,7 @@ function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-export default function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
+export function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
   target = betterPathResolve(target)
 

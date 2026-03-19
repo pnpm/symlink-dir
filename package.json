@@ -15,7 +15,6 @@
     "!*.map"
   ],
   "typings": "dist/index.d.ts",
-  "bin": "dist/cli.js",
   "keywords": [
     "symlink",
     "symlinking",
