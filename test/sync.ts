@@ -1,11 +1,9 @@
 import { promises as fs } from 'fs'
-import path from 'path'
-import { pathToFileURL } from 'url'
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import tempy from 'tempy'
 import writeJsonFile from 'write-json-file'
-import { symlinkDir, symlinkDirSync } from '../src/index.js'
+import { symlinkDir, symlinkDirSync } from '../src/index.ts'
 
 if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
   console.log('Emulating Windows non-developer mode')
@@ -87,7 +85,7 @@ it('create parent directory of symlink', async () => {
   const { warn } = symlinkDirSync('src', 'dest/subdir')
 
   assert.ok(!warn)
-  assert.deepStrictEqual((await import(pathToFileURL(path.resolve('dest/subdir/file.json')).href)).default, { ok: true })
+  assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
 })
 
 it('concurrently creating the same symlink twice', async () => {
@@ -101,7 +99,7 @@ it('concurrently creating the same symlink twice', async () => {
     symlinkDir('src', 'dest/subdir'),
   ])
 
-  assert.deepStrictEqual((await import(pathToFileURL(path.resolve('dest/subdir/file.json')).href)).default, { ok: true })
+  assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
 })
 
 it('reusing the existing symlink if it already points to the needed location', async () => {
@@ -114,7 +112,7 @@ it('reusing the existing symlink if it already points to the needed location', a
   const { reused } = symlinkDirSync('src', 'dest/subdir')
 
   assert.strictEqual(reused, true)
-  assert.deepStrictEqual((await import(pathToFileURL(path.resolve('dest/subdir/file.json')).href)).default, { ok: true })
+  assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
 })
 
 if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
@@ -128,7 +126,7 @@ if (!globalThis.symlinkBlockedInWindows || process.platform !== 'win32') {
     const { reused } = symlinkDirSync('src', 'dest/subdir', { noJunction: true })
 
     assert.strictEqual(reused, true)
-    assert.deepStrictEqual((await import(pathToFileURL(path.resolve('dest/subdir/file.json')).href)).default, { ok: true })
+    assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
   })
 }
 
@@ -203,7 +201,7 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
       globalThis.symlinkBlockedInWindows = true
     }
 
-    assert.deepStrictEqual((await import(pathToFileURL(path.resolve('dest/subdir/file.json')).href)).default, { ok: true })
+    assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
   })
 
   it('reusing the existing symlink if it already points to the needed location (Developer Mode: on -> off)', async () => {
@@ -221,6 +219,6 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
     const { reused } = symlinkDirSync('src', 'dest/subdir')
 
     assert.strictEqual(reused, true)
-    assert.deepStrictEqual((await import(pathToFileURL(path.resolve('dest/subdir/file.json')).href)).default, { ok: true })
+    assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
   })
 }

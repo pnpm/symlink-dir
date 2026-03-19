@@ -9,7 +9,7 @@ interface SymlinkDirOptions {
   noJunction?: boolean
 }
 
-const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
+const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(process.env.OSTYPE as string)
 
 function resolveSrcOnWinJunction (src: string) {
   return `${src}\\`
@@ -55,7 +55,7 @@ if (IS_WINDOWS) {
       createSymlinkSync = createTrueSymlinkSync
       createSymlinkAsync = createTrueSymlinkAsync
     } catch (err) {
-      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+      if ((err as NodeJS.ErrnoException).code === 'EPERM') {
         await createJunctionAsync(target, path)
         createSymlinkSync = createJunctionSync
         createSymlinkAsync = createJunctionAsync
@@ -70,7 +70,7 @@ if (IS_WINDOWS) {
       createSymlinkSync = createTrueSymlinkSync
       createSymlinkAsync = createTrueSymlinkAsync
     } catch (err) {
-      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+      if ((err as NodeJS.ErrnoException).code === 'EPERM') {
         createJunctionSync(target, path)
         createSymlinkSync = createJunctionSync
         createSymlinkAsync = createJunctionAsync
@@ -120,7 +120,7 @@ async function forceSymlink (
     }
     return { reused: false }
   } catch (err) {
-    switch ((<NodeJS.ErrnoException>err).code) {
+    switch ((err as NodeJS.ErrnoException).code) {
       case 'ENOENT':
         try {
           await fs.mkdir(pathLib.dirname(path), { recursive: true })
@@ -209,7 +209,7 @@ function forceSymlinkSync (
     return { reused: false }
   } catch (err) {
     initialErr = err
-    switch ((<NodeJS.ErrnoException>err).code) {
+    switch ((err as NodeJS.ErrnoException).code) {
       case 'ENOENT':
         try {
           mkdirSync(pathLib.dirname(path), { recursive: true })
