@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/node": "^22.15.3",
     "@types/tape": "5.6.4",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.0.0",
     "tape": "^5.9.0",
     "tempy": "^1.0.1",
     "ts-node": "^10.9.2",
