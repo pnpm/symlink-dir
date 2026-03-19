@@ -193,15 +193,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-pnpmfileChecksum: sha256-/xhzNOuu2gnHZ9xSXg2Whi1pXgoDOLRXuVQKnoPEjMY=
-
 importers:
 
   .:
     dependencies:
       better-path-resolve:
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^2.0.0
+        version: 2.0.0
       rename-overwrite:
         specifier: ^6.0.2
         version: 6.0.2
@@ -335,9 +333,9 @@ packages:
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
-  better-path-resolve@1.0.0:
-    resolution: {integrity: sha512-pbnl5XzGBdrFU/wT4jqmJVPn2B6UHPBOhzMQkY/SPUPB6QtUXtmBHBIwCbXJol93mOpGMnQyP/+BB19q04xj7g==}
-    engines: {node: '>=4'}
+  better-path-resolve@2.0.0:
+    resolution: {integrity: sha512-VvvsZgI0upmMbG1iEFiQ7hRG+fDJwmw7iFfKLzBVNhRd2ycauJ3+3w50ESX+pS2tvS9R2hMzijwE+vinDyqQzQ==}
+    engines: {node: '>=22.13'}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -504,7 +502,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globalthis@1.0.4:
     resolution: {integrity: sha512-DpLKbNU4WylpxJykQujfCcwYWiV/Jhm50Goo0wrVILAv5jOr9d+H+UR3PhSCD2rCCEIg0uc+G+muBTwD54JhDQ==}
@@ -1092,7 +1090,7 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  better-path-resolve@1.0.0:
+  better-path-resolve@2.0.0:
     dependencies:
       is-windows: 1.0.2
 
