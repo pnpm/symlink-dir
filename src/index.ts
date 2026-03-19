@@ -1,15 +1,15 @@
-import betterPathResolve = require('better-path-resolve')
+import betterPathResolve from 'better-path-resolve'
 import { promises as fs, symlinkSync, mkdirSync, readlinkSync, unlinkSync } from 'fs'
-import util = require('util')
-import pathLib = require('path')
-import renameOverwrite = require('rename-overwrite')
+import { types } from 'util'
+import pathLib from 'path'
+import renameOverwrite from 'rename-overwrite'
 
 interface SymlinkDirOptions {
   overwrite?: boolean
   noJunction?: boolean
 }
 
-const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(<string>process.env.OSTYPE)
+const IS_WINDOWS = process.platform === 'win32' || /^(msys|cygwin)$/.test(process.env.OSTYPE as string)
 
 function resolveSrcOnWinJunction (src: string) {
   return `${src}\\`
@@ -19,13 +19,22 @@ function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
+export function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
   target = betterPathResolve(target)
 
   if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
   return forceSymlink(target, path, opts)
+}
+
+export function symlinkDirSync (target: string, path: string, opts?: SymlinkDirOptions): { reused: boolean, warn?: string } {
+  path = betterPathResolve(path)
+  target = betterPathResolve(target)
+
+  if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
+
+  return forceSymlinkSync(target, path, opts)
 }
 
 function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkString: string): boolean {
@@ -46,7 +55,7 @@ if (IS_WINDOWS) {
       createSymlinkSync = createTrueSymlinkSync
       createSymlinkAsync = createTrueSymlinkAsync
     } catch (err) {
-      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+      if ((err as NodeJS.ErrnoException).code === 'EPERM') {
         await createJunctionAsync(target, path)
         createSymlinkSync = createJunctionSync
         createSymlinkAsync = createJunctionAsync
@@ -61,7 +70,7 @@ if (IS_WINDOWS) {
       createSymlinkSync = createTrueSymlinkSync
       createSymlinkAsync = createTrueSymlinkAsync
     } catch (err) {
-      if ((<NodeJS.ErrnoException>err).code === 'EPERM') {
+      if ((err as NodeJS.ErrnoException).code === 'EPERM') {
         createJunctionSync(target, path)
         createSymlinkSync = createJunctionSync
         createSymlinkAsync = createJunctionAsync
@@ -111,7 +120,7 @@ async function forceSymlink (
     }
     return { reused: false }
   } catch (err) {
-    switch ((<NodeJS.ErrnoException>err).code) {
+    switch ((err as NodeJS.ErrnoException).code) {
       case 'ENOENT':
         try {
           await fs.mkdir(pathLib.dirname(path), { recursive: true })
@@ -154,7 +163,7 @@ async function forceSymlink (
       try {
         await renameOverwrite(path, pathLib.join(parentDir, ignore))
       } catch (error) {
-        if (util.types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
+        if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
           throw initialErr
         }
         throw error
@@ -178,27 +187,11 @@ async function forceSymlink (
   try {
     await fs.unlink(path)
   } catch (error) {
-    if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+    if (!types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
       throw error
     }
   }
   return await forceSymlink(target, path, opts)
-}
-
-// for backward compatibility
-symlinkDir['default'] = symlinkDir
-
-export = symlinkDir
-
-namespace symlinkDir {
-  export function sync (target: string, path: string, opts?: SymlinkDirOptions): { reused: boolean, warn?: string } {
-    path = betterPathResolve(path)
-    target = betterPathResolve(target)
-
-    if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
-
-    return forceSymlinkSync(target, path, opts)
-  }
 }
 
 function forceSymlinkSync (
@@ -216,7 +209,7 @@ function forceSymlinkSync (
     return { reused: false }
   } catch (err) {
     initialErr = err
-    switch ((<NodeJS.ErrnoException>err).code) {
+    switch ((err as NodeJS.ErrnoException).code) {
       case 'ENOENT':
         try {
           mkdirSync(pathLib.dirname(path), { recursive: true })
@@ -258,7 +251,7 @@ function forceSymlinkSync (
       try {
         renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
       } catch (error) {
-        if (util.types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
+        if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
           throw initialErr
         }
         throw error
@@ -281,7 +274,7 @@ function forceSymlinkSync (
   try {
     unlinkSync(path)
   } catch (error) {
-    if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+    if (!types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
       throw error
     }
   }
