@@ -2,7 +2,14 @@
   "name": "symlink-dir",
   "version": "9.0.0",
   "description": "Cross-platform directory symlinking",
+  "type": "module",
   "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist/",
     "!*.map"
@@ -19,8 +26,8 @@
   ],
   "scripts": {
     "pretest": "rimraf node_modules/src",
-    "test": "ts-node test/sync.ts && ts-node test/async.ts",
-    "test:non-develop": "ts-node -r ./test/emulateWinNonDevelopMode.js test/sync.ts && ts-node -r ./test/emulateWinNonDevelopMode.js test/async.ts",
+    "test": "tsx test/sync.ts && tsx test/async.ts",
+    "test:non-develop": "tsx -r ./test/emulateWinNonDevelopMode.cjs test/sync.ts && tsx -r ./test/emulateWinNonDevelopMode.cjs test/async.ts",
     "premd": "rimraf node_modules/src && npm run tsc",
     "tsc": "rimraf dist && tsc",
     "prepublishOnly": "npm run tsc"
@@ -45,7 +52,7 @@
     "rimraf": "^3.0.2",
     "tape": "^5.9.0",
     "tempy": "^1.0.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.0",
     "typescript": "^5.8.3",
     "write-json-file": "^4.3.0"
   },

@@ -1,8 +1,8 @@
-import betterPathResolve = require('better-path-resolve')
+import betterPathResolve from 'better-path-resolve'
 import { promises as fs, symlinkSync, mkdirSync, readlinkSync, unlinkSync } from 'fs'
-import util = require('util')
-import pathLib = require('path')
-import renameOverwrite = require('rename-overwrite')
+import { types } from 'util'
+import pathLib from 'path'
+import renameOverwrite from 'rename-overwrite'
 
 interface SymlinkDirOptions {
   overwrite?: boolean
@@ -19,13 +19,22 @@ function resolveSrcOnTrueSymlink (src: string, dest: string) {
   return pathLib.relative(pathLib.dirname(dest), src)
 }
 
-function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
+export default function symlinkDir (target: string, path: string, opts?: SymlinkDirOptions): Promise<{ reused: boolean, warn?: string }> {
   path = betterPathResolve(path)
   target = betterPathResolve(target)
 
   if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
 
   return forceSymlink(target, path, opts)
+}
+
+export function symlinkDirSync (target: string, path: string, opts?: SymlinkDirOptions): { reused: boolean, warn?: string } {
+  path = betterPathResolve(path)
+  target = betterPathResolve(target)
+
+  if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
+
+  return forceSymlinkSync(target, path, opts)
 }
 
 function isExistingSymlinkUpToDate (wantedTarget: string, path: string, linkString: string): boolean {
@@ -154,7 +163,7 @@ async function forceSymlink (
       try {
         await renameOverwrite(path, pathLib.join(parentDir, ignore))
       } catch (error) {
-        if (util.types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
+        if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
           throw initialErr
         }
         throw error
@@ -178,27 +187,11 @@ async function forceSymlink (
   try {
     await fs.unlink(path)
   } catch (error) {
-    if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+    if (!types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
       throw error
     }
   }
   return await forceSymlink(target, path, opts)
-}
-
-// for backward compatibility
-symlinkDir['default'] = symlinkDir
-
-export = symlinkDir
-
-namespace symlinkDir {
-  export function sync (target: string, path: string, opts?: SymlinkDirOptions): { reused: boolean, warn?: string } {
-    path = betterPathResolve(path)
-    target = betterPathResolve(target)
-
-    if (target === path) throw new Error(`Symlink path is the same as the target path (${target})`)
-
-    return forceSymlinkSync(target, path, opts)
-  }
 }
 
 function forceSymlinkSync (
@@ -258,7 +251,7 @@ function forceSymlinkSync (
       try {
         renameOverwrite.sync(path, pathLib.join(parentDir, ignore))
       } catch (error) {
-        if (util.types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
+        if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
           throw initialErr
         }
         throw error
@@ -281,7 +274,7 @@ function forceSymlinkSync (
   try {
     unlinkSync(path)
   } catch (error) {
-    if (!util.types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+    if (!types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
       throw error
     }
   }

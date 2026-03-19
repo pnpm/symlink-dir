@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import linkDir = require('.')
+import linkDir from './index.js'
 
 const args = process.argv.slice(2)
 
