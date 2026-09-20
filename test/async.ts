@@ -222,3 +222,70 @@ if (globalThis.symlinkBlockedInWindows && process.platform === 'win32') {
     assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/subdir/file.json', 'utf8')), { ok: true })
   })
 }
+
+it('reissue the create when the entry it conflicted with has gone', async () => {
+  const temp = temporaryDirectory()
+  process.chdir(temp)
+
+  await writeJsonFile('src/file.json', { ok: true })
+
+  // The create loses the race for `dest`, and by the time this call looks the
+  // winner has cleared it again: the read finds nothing there and
+  // `renameOverwrite` reports ENOENT. The conflict the create reported is gone,
+  // so the create is worth another attempt. It used to surface as EEXIST.
+  const origSymlink = fs.symlink
+  let conflicted = false
+  fs.symlink = (async (...args: Parameters<typeof origSymlink>) => {
+    if (conflicted) return origSymlink(...args)
+    conflicted = true
+    const err: NodeJS.ErrnoException = new Error('EEXIST: file already exists')
+    err.code = 'EEXIST'
+    throw err
+  }) as typeof origSymlink
+
+  try {
+    const { reused, warn } = await symlinkDir('src', 'dest')
+
+    assert.strictEqual(reused, false)
+    assert.strictEqual(warn, undefined)
+  } finally {
+    fs.symlink = origSymlink
+  }
+
+  assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/file.json', 'utf8')), { ok: true })
+})
+
+// The wait is Windows-only, so this can only run there.
+if (process.platform === 'win32') {
+  it('wait out a link a concurrent writer is still holding', async () => {
+    const temp = temporaryDirectory()
+    process.chdir(temp)
+
+    await writeJsonFile('src/file.json', { ok: true })
+    await symlinkDir('src', 'dest')
+
+    // The link is correct and present, but reading it refuses while another
+    // process holds a handle on it. Taking that for "not a link" moved a good
+    // link to `.ignored_dest` and made a new one.
+    const origReadlink = fs.readlink
+    let refused = false
+    fs.readlink = (async (...args: Parameters<typeof origReadlink>) => {
+      if (refused) return origReadlink(...args)
+      refused = true
+      const err: NodeJS.ErrnoException = new Error('EPERM: operation not permitted')
+      err.code = 'EPERM'
+      throw err
+    }) as typeof origReadlink
+
+    try {
+      const { reused, warn } = await symlinkDir('src', 'dest')
+
+      assert.strictEqual(reused, true)
+      assert.strictEqual(warn, undefined)
+    } finally {
+      fs.readlink = origReadlink
+    }
+
+    assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/file.json', 'utf8')), { ok: true })
+  })
+}
