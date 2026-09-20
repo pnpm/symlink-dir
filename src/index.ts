@@ -98,12 +98,65 @@ function createJunctionSync (target: string, path: string) {
   symlinkSync(resolveSrcOnWinJunction(target), path, 'junction')
 }
 
+// Windows leaves a path another process has just created or unlinked
+// unavailable for a moment, answering EPERM, EACCES or EBUSY where a
+// definitive answer is due elsewhere. `rename-overwrite` already waits these
+// out on a rename with this budget, and a read of the same path needs it for
+// the same reason: without it a link a concurrent writer is still holding is
+// taken for something that is not a link at all.
+const TRANSIENT_REFUSAL_CODES = new Set(['EPERM', 'EACCES', 'EBUSY'])
+const REFUSAL_BUDGET_MS = 60000
+const MAX_BACKOFF_MS = 100
+
+function isTransientRefusal (err: unknown): boolean {
+  return IS_WINDOWS &&
+    types.isNativeError(err) &&
+    'code' in err &&
+    TRANSIENT_REFUSAL_CODES.has((err as NodeJS.ErrnoException).code as string)
+}
+
+async function readlinkWaitingOutARefusal (path: string): Promise<string> {
+  const deadline = Date.now() + REFUSAL_BUDGET_MS
+  let backoff = 0
+  while (true) {
+    try {
+      return await fs.readlink(path)
+    } catch (err) {
+      if (!isTransientRefusal(err) || Date.now() >= deadline) throw err
+      await new Promise<void>((resolve) => setTimeout(resolve, backoff))
+      backoff = Math.min(backoff + 10, MAX_BACKOFF_MS)
+    }
+  }
+}
+
+function readlinkSyncWaitingOutARefusal (path: string): string {
+  const deadline = Date.now() + REFUSAL_BUDGET_MS
+  let backoff = 0
+  while (true) {
+    try {
+      return readlinkSync(path)
+    } catch (err) {
+      if (!isTransientRefusal(err) || Date.now() >= deadline) throw err
+      sleepSync(backoff)
+      backoff = Math.min(backoff + 10, MAX_BACKOFF_MS)
+    }
+  }
+}
+
+// `Atomics.wait` parks the thread. Polling `Date.now()` in a loop would hold a
+// core for as long as the refusal lasts.
+function sleepSync (ms: number): void {
+  if (ms === 0) return
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms)
+}
+
 /**
  * Creates a symlink. Re-link if a symlink already exists at the supplied
  * srcPath. API compatible with [`fs#symlink`](https://nodejs.org/api/fs.html#fs_fs_symlink_srcpath_dstpath_type_callback).
  */
 interface ForceSymlinkOptions extends SymlinkDirOptions {
   renameTried?: boolean
+  vanishedRetried?: boolean
 }
 
 async function forceSymlink (
@@ -145,7 +198,7 @@ async function forceSymlink (
 
   let linkString: string
   try {
-    linkString = await fs.readlink(path)
+    linkString = await readlinkWaitingOutARefusal(path)
   } catch (err) {
     if (opts?.overwrite === false) {
       throw initialErr
@@ -163,10 +216,16 @@ async function forceSymlink (
       try {
         await renameOverwrite(path, pathLib.join(parentDir, ignore))
       } catch (error) {
-        if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
-          throw initialErr
+        if (!types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+          throw error
         }
-        throw error
+        // `renameOverwrite` reports ENOENT only when `path` itself is gone, so
+        // the conflict `initialErr` describes has already been cleared by
+        // whoever won the race for it. Reissue the create instead of reporting
+        // a conflict with something that is no longer there. Once only: a path
+        // this can neither create at nor find anything at surfaces its error.
+        if (opts?.vanishedRetried) throw initialErr
+        return await forceSymlink(target, path, { ...opts, vanishedRetried: true })
       }
 
       warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
@@ -233,7 +292,7 @@ function forceSymlinkSync (
 
   let linkString: string
   try {
-    linkString = readlinkSync(path)
+    linkString = readlinkSyncWaitingOutARefusal(path)
   } catch (err) {
     if (opts?.overwrite === false) {
       throw initialErr
@@ -251,10 +310,12 @@ function forceSymlinkSync (
       try {
         renameOverwriteSync(path, pathLib.join(parentDir, ignore))
       } catch (error) {
-        if (types.isNativeError(error) && 'code' in error && error.code === 'ENOENT') {
-          throw initialErr
+        if (!types.isNativeError(error) || !('code' in error) || error.code !== 'ENOENT') {
+          throw error
         }
-        throw error
+        // See the matching branch in `forceSymlink`.
+        if (opts?.vanishedRetried) throw initialErr
+        return forceSymlinkSync(target, path, { ...opts, vanishedRetried: true })
       }
       warn = `Symlink wanted name was occupied by directory or file. Old entity moved: "${parentDir}${pathLib.sep}{${pathLib.basename(path)} => ${ignore}".`
     }
