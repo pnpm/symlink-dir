@@ -289,3 +289,34 @@ if (process.platform === 'win32') {
     assert.deepStrictEqual(JSON.parse(await fs.readFile('dest/file.json', 'utf8')), { ok: true })
   })
 }
+
+// Also Windows-only, for the same reason as the test above.
+if (process.platform === 'win32') {
+  it('give up on a permission refusal without waiting out the full budget', async () => {
+    const temp = temporaryDirectory()
+    process.chdir(temp)
+
+    await writeJsonFile('src/file.json', { ok: true })
+    await symlinkDir('src', 'dest')
+
+    // A refusal that never clears is a path the user may not read, not a
+    // handle another process will let go of. Waiting a minute for it only
+    // delays the answer.
+    const origReadlink = fs.readlink
+    fs.readlink = (async () => {
+      const err: NodeJS.ErrnoException = new Error('EPERM: operation not permitted')
+      err.code = 'EPERM'
+      throw err
+    }) as typeof origReadlink
+
+    const started = Date.now()
+    try {
+      await symlinkDir('src', 'dest')
+    } finally {
+      fs.readlink = origReadlink
+    }
+    const elapsed = Date.now() - started
+
+    assert.ok(elapsed < 20000, `gave up after ${elapsed}ms, so it waited out the full budget`)
+  })
+}

@@ -101,28 +101,44 @@ function createJunctionSync (target: string, path: string) {
 // Windows leaves a path another process has just created or unlinked
 // unavailable for a moment, answering EPERM, EACCES or EBUSY where a
 // definitive answer is due elsewhere. `rename-overwrite` already waits these
-// out on a rename with this budget, and a read of the same path needs it for
-// the same reason: without it a link a concurrent writer is still holding is
-// taken for something that is not a link at all.
+// out on a rename, and a read of the same path needs it for the same reason:
+// without it a link a concurrent writer is still holding is taken for
+// something that is not a link at all.
+//
+// EPERM and EACCES also carry the permanent case, a path the user may not read
+// at all, which no amount of waiting will change. They get a second rather
+// than a minute so a real denial still surfaces promptly. EBUSY only ever
+// means a handle is open, so it keeps the full budget.
 const TRANSIENT_REFUSAL_CODES = new Set(['EPERM', 'EACCES', 'EBUSY'])
+const PERMISSION_REFUSAL_CODES = new Set(['EPERM', 'EACCES'])
 const REFUSAL_BUDGET_MS = 60000
+const PERMISSION_REFUSAL_BUDGET_MS = 1000
 const MAX_BACKOFF_MS = 100
 
-function isTransientRefusal (err: unknown): boolean {
-  return IS_WINDOWS &&
-    types.isNativeError(err) &&
-    'code' in err &&
-    TRANSIENT_REFUSAL_CODES.has((err as NodeJS.ErrnoException).code as string)
+function refusalCode (err: unknown): string | undefined {
+  if (!IS_WINDOWS || !types.isNativeError(err) || !('code' in err)) return undefined
+  const code = (err as NodeJS.ErrnoException).code as string
+  return TRANSIENT_REFUSAL_CODES.has(code) ? code : undefined
+}
+
+// The deadline shrinks to whichever of the refusals seen so far allows the
+// least, so one EPERM caps the wait even if an EBUSY came first.
+function budgetFor (code: string): number {
+  return PERMISSION_REFUSAL_CODES.has(code) ? PERMISSION_REFUSAL_BUDGET_MS : REFUSAL_BUDGET_MS
 }
 
 async function readlinkWaitingOutARefusal (path: string): Promise<string> {
-  const deadline = Date.now() + REFUSAL_BUDGET_MS
+  const started = Date.now()
+  let deadline = Number.POSITIVE_INFINITY
   let backoff = 0
   while (true) {
     try {
       return await fs.readlink(path)
     } catch (err) {
-      if (!isTransientRefusal(err) || Date.now() >= deadline) throw err
+      const code = refusalCode(err)
+      if (code == null) throw err
+      deadline = Math.min(deadline, started + budgetFor(code))
+      if (Date.now() >= deadline) throw err
       await new Promise<void>((resolve) => setTimeout(resolve, backoff))
       backoff = Math.min(backoff + 10, MAX_BACKOFF_MS)
     }
@@ -130,13 +146,17 @@ async function readlinkWaitingOutARefusal (path: string): Promise<string> {
 }
 
 function readlinkSyncWaitingOutARefusal (path: string): string {
-  const deadline = Date.now() + REFUSAL_BUDGET_MS
+  const started = Date.now()
+  let deadline = Number.POSITIVE_INFINITY
   let backoff = 0
   while (true) {
     try {
       return readlinkSync(path)
     } catch (err) {
-      if (!isTransientRefusal(err) || Date.now() >= deadline) throw err
+      const code = refusalCode(err)
+      if (code == null) throw err
+      deadline = Math.min(deadline, started + budgetFor(code))
+      if (Date.now() >= deadline) throw err
       sleepSync(backoff)
       backoff = Math.min(backoff + 10, MAX_BACKOFF_MS)
     }
