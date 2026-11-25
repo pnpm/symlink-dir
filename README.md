@@ -17,22 +17,11 @@
 pnpm add symlink-dir
 ```
 
-## CLI Usage
-
-Lets suppose you'd like to self-require your package. You can link it to its own `node_modules`:
-
-```sh
-# from -> to
-symlink-dir . node_modules/my-package
-```
-
 ## API Usage
 
 <!--@example('./example.js')-->
 ```js
-'use strict'
-const symlinkDir = require('symlink-dir')
-const path = require('path')
+import { symlinkDir } from 'symlink-dir'
 
 symlinkDir('src', 'node_modules/src')
   .then(result => {
@@ -52,7 +41,7 @@ symlinkDir('src', 'node_modules/src')
 ## API
 
 ### `symlinkDir(target, path, opts?): Promise<{ reused: boolean, warn?: string }>`
-### `symlinkDir.sync(target, path, opts?): { reused: boolean, warn?: string }`
+### `symlinkDirSync(target, path, opts?): { reused: boolean, warn?: string }`
 
 Creates the link called `path` pointing to `target`.
 

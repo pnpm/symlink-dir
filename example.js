@@ -1,6 +1,4 @@
-'use strict'
-const symlinkDir = require('./dist')
-const path = require('path')
+import { symlinkDir } from './dist/index.js'
 
 symlinkDir('src', 'node_modules/src')
   .then(result => {
